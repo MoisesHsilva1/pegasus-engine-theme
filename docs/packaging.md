@@ -104,3 +104,39 @@ npx -y asar list release/linux-unpacked/resources/app.asar
 ```
 
 Confirm that no `.env`, `.git`, or test files are included in the bundle.
+
+---
+
+## 7. Theme Resources in the Production Package
+
+Bundled themes are included in the production package via `electron-builder`'s `extraResources`
+configuration in `package.json`:
+
+```json
+"extraResources": [
+  { "from": "src/themes", "to": "themes" }
+]
+```
+
+This copies `src/themes/` → `resources/themes/` inside the packaged application.
+
+### Installed Package Theme Locations
+
+| Package format | Theme path |
+| :--- | :--- |
+| **RPM** (installed) | `/opt/pegasus-engine-theme/resources/themes/{themeId}/` |
+| **AppImage** (mounted) | `{mount}/resources/themes/{themeId}/` |
+| **linux-unpacked** (dev) | `release/linux-unpacked/resources/themes/{themeId}/` |
+
+The application resolves these paths at runtime via `process.resourcesPath`, which Electron sets
+automatically to the `resources/` directory of the installed package.
+
+### Verifying Themes Are Included
+
+After running `pnpm package:rpm` or `pnpm package:appimage`, verify themes were bundled:
+
+```bash
+ls release/linux-unpacked/resources/themes/
+# Expected output: catppuccin  everforest  gruvbox  kanagawa  matte-black  nord  osaka-jade  ristretto  rose-pine  set-gnome-theme.sh  tokyo-night
+```
+
