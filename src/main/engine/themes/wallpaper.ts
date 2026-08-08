@@ -1,5 +1,6 @@
 import { execFile } from 'child_process'
-import { existsSync, statSync } from 'fs'
+import { createHash } from 'crypto'
+import { existsSync, statSync, createReadStream } from 'fs'
 import fs from 'fs/promises'
 import os from 'os'
 import path from 'path'
@@ -24,6 +25,33 @@ export class WallpaperService {
 
   private getWallpapersDir(): string {
     return path.join(this.getHomeDir(), '.local', 'share', 'pegasus', 'wallpapers')
+  }
+
+  /**
+   * Computes a unique content hash (first 12 characters of SHA-256) for a wallpaper file.
+   * Uses streams to process files to ensure a low memory footprint.
+   */
+  public async computeWallpaperHash(filePath: string): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      if (!existsSync(filePath)) {
+        return reject(new Error(`File not found: ${filePath}`))
+      }
+
+      const hash = createHash('sha256')
+      const stream = createReadStream(filePath)
+
+      stream.on('data', (chunk) => {
+        hash.update(chunk)
+      })
+
+      stream.on('end', () => {
+        resolve(hash.digest('hex').substring(0, 12))
+      })
+
+      stream.on('error', (err) => {
+        reject(err)
+      })
+    })
   }
 
   /**
@@ -136,8 +164,7 @@ export class WallpaperService {
     }
 
     try {
-      const stat = statSync(filePath)
-      const version = `${Math.floor(stat.mtimeMs)}-${stat.size}`
+      const version = await this.computeWallpaperHash(filePath)
       const previewUrl = `pegasus-asset://${filePath}?v=${version}`
 
       return {
@@ -187,8 +214,7 @@ export class WallpaperService {
     const wallpapersDir = this.getWallpapersDir()
     await fs.mkdir(wallpapersDir, { recursive: true })
 
-    const statSrc = await fs.stat(srcPath)
-    const version = `${Math.floor(statSrc.mtimeMs)}-${statSrc.size}`
+    const version = await this.computeWallpaperHash(srcPath)
     const ext = path.extname(srcPath).toLowerCase()
     const targetFileName = `${themeId}-${version}${ext}`
     const targetPath = path.join(wallpapersDir, targetFileName)
