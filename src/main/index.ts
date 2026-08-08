@@ -1,7 +1,7 @@
-import { app, BrowserWindow, nativeTheme, Menu, protocol, net } from 'electron'
+import { app, BrowserWindow, nativeTheme, Menu, protocol } from 'electron'
 import fs from 'fs'
 import path from 'path'
-import { fileURLToPath, pathToFileURL } from 'url'
+import { fileURLToPath } from 'url'
 import { PegasusEngine } from './engine'
 import { registerIpcHandlers } from './ipc'
 
@@ -76,7 +76,19 @@ app.whenReady().then(() => {
       if (!fs.existsSync(filePath)) {
         return new Response('Asset not found', { status: 404 })
       }
-      return net.fetch(pathToFileURL(filePath).toString())
+      const buffer = fs.readFileSync(filePath)
+      const ext = path.extname(filePath).toLowerCase()
+      const mimeTypes: Record<string, string> = {
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.webp': 'image/webp',
+        '.gif': 'image/gif',
+      }
+      const contentType = mimeTypes[ext] || 'application/octet-stream'
+      return new Response(buffer, {
+        headers: { 'content-type': contentType },
+      })
     } catch (err) {
       return new Response(`Error loading asset: ${String(err)}`, { status: 500 })
     }
