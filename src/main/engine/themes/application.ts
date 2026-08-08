@@ -5,11 +5,9 @@ import os from 'os'
 import type { ThemeApplyResult, ThemeOperationResult } from '@shared/types'
 import { THEME_MANIFESTS, type ThemeId } from '../../../themes'
 import { WallpaperService } from './wallpaper'
-import { VSCodeService } from '../vscode'
 
 export class ThemeApplicationService {
   private wallpaperService = new WallpaperService()
-  private vscodeService = new VSCodeService()
 
   private getHomeDir(): string {
     return os.homedir()
@@ -185,9 +183,6 @@ export class ThemeApplicationService {
       const home = this.getHomeDir()
       const backupTargets = [
         path.join(home, '.config', 'alacritty', 'alacritty.toml'),
-        path.join(home, '.config', 'btop', 'btop.conf'),
-        path.join(home, '.config', 'nvim', 'lua', 'plugins', 'theme.lua'),
-        path.join(home, '.config', 'Code', 'User', 'settings.json'),
         path.join(home, '.config', 'zellij', 'config.kdl'),
       ]
       backupFolder = await this.createBackup(backupTargets)
@@ -255,45 +250,7 @@ export class ThemeApplicationService {
         })
       }
 
-      // 6. Apply btop Theme
-      const btopTheme = path.join(themeDir, 'btop.theme')
-      if (existsSync(btopTheme)) {
-        try {
-          const btopThemeDir = path.join(home, '.config', 'btop', 'themes')
-          await fs.mkdir(btopThemeDir, { recursive: true })
-          await fs.copyFile(btopTheme, path.join(btopThemeDir, `${themeId}.theme`))
-
-          const btopConf = path.join(home, '.config', 'btop', 'btop.conf')
-          if (existsSync(btopConf)) {
-            let content = await fs.readFile(btopConf, 'utf-8')
-            if (content.includes('color_theme =')) {
-              content = content.replace(/color_theme\s*=\s*".*"/, `color_theme = "${themeId}"`)
-            } else {
-              content += `\ncolor_theme = "${themeId}"\n`
-            }
-            await fs.writeFile(btopConf, content, 'utf-8')
-          }
-          operations.push({
-            name: 'btop Monitor',
-            status: 'SUCCESS',
-            message: `Applied btop color theme (${themeId}.theme).`,
-          })
-        } catch (err) {
-          operations.push({
-            name: 'btop Monitor',
-            status: 'WARNING',
-            message: `Failed applying btop theme: ${err instanceof Error ? err.message : String(err)}`,
-          })
-        }
-      } else {
-        operations.push({
-          name: 'btop Monitor',
-          status: 'SKIPPED',
-          message: 'No btop.theme file found.',
-        })
-      }
-
-      // 9. Apply Zellij Theme
+      // 6. Apply Zellij Theme
       const zellijKdl = path.join(themeDir, 'zellij.kdl')
       if (existsSync(zellijKdl)) {
         try {
@@ -317,23 +274,6 @@ export class ThemeApplicationService {
           name: 'Zellij Multiplexer',
           status: 'SKIPPED',
           message: 'No zellij.kdl configuration found.',
-        })
-      }
-
-      // 8. Apply VS Code Theme
-      const vscodeThemeName = manifest.vscode?.themeName
-      if (vscodeThemeName) {
-        const vscResult = await this.vscodeService.applyVSCodeTheme(vscodeThemeName)
-        operations.push({
-          name: 'VS Code',
-          status: vscResult.status,
-          message: vscResult.message,
-        })
-      } else {
-        operations.push({
-          name: 'VS Code',
-          status: 'SKIPPED',
-          message: 'No VS Code theme configuration found.',
         })
       }
 

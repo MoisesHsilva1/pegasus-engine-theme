@@ -41,9 +41,6 @@ export interface SystemThemeManifest {
   accentColor: string
   tokens: ThemeTokens
   wallpaper: WallpaperMetadata
-  vscode?: {
-    themeName: string
-  }
 }
 
 export const THEME_MANIFESTS: Record<ThemeId, SystemThemeManifest> = {
@@ -64,9 +61,6 @@ export const THEME_MANIFESTS: Record<ThemeId, SystemThemeManifest> = {
       enabled: true,
       resolution: '3840x2160',
     },
-    vscode: {
-      themeName: 'Cursor Dark',
-    },
   },
   gruvbox: {
     id: 'gruvbox',
@@ -84,9 +78,6 @@ export const THEME_MANIFESTS: Record<ThemeId, SystemThemeManifest> = {
       file: 'background.jpg',
       enabled: true,
       resolution: '2560x1440',
-    },
-    vscode: {
-      themeName: 'Gruvbox Dark Hard',
     },
   },
   kanagawa: {
@@ -106,9 +97,6 @@ export const THEME_MANIFESTS: Record<ThemeId, SystemThemeManifest> = {
       enabled: true,
       resolution: '3840x2160',
     },
-    vscode: {
-      themeName: 'Kanagawa',
-    },
   },
   nord: {
     id: 'nord',
@@ -126,9 +114,6 @@ export const THEME_MANIFESTS: Record<ThemeId, SystemThemeManifest> = {
       file: 'background.png',
       enabled: true,
       resolution: '3840x2160',
-    },
-    vscode: {
-      themeName: 'Nord',
     },
   },
   'osaka-jade': {
@@ -148,9 +133,6 @@ export const THEME_MANIFESTS: Record<ThemeId, SystemThemeManifest> = {
       enabled: true,
       resolution: '2560x1440',
     },
-    vscode: {
-      themeName: 'Osaka Jade',
-    },
   },
   ristretto: {
     id: 'ristretto',
@@ -168,9 +150,6 @@ export const THEME_MANIFESTS: Record<ThemeId, SystemThemeManifest> = {
       file: 'background.jpg',
       enabled: true,
       resolution: '3840x2160',
-    },
-    vscode: {
-      themeName: 'Monokai Pro (Filter Ristretto)',
     },
   },
   'rose-pine': {
@@ -190,9 +169,6 @@ export const THEME_MANIFESTS: Record<ThemeId, SystemThemeManifest> = {
       enabled: true,
       resolution: '3840x2160',
     },
-    vscode: {
-      themeName: 'Rosé Pine',
-    },
   },
   catppuccin: {
     id: 'catppuccin',
@@ -210,9 +186,6 @@ export const THEME_MANIFESTS: Record<ThemeId, SystemThemeManifest> = {
       file: 'background.png',
       enabled: true,
       resolution: '3840x2160',
-    },
-    vscode: {
-      themeName: 'Catppuccin Mocha',
     },
   },
   everforest: {
@@ -232,9 +205,6 @@ export const THEME_MANIFESTS: Record<ThemeId, SystemThemeManifest> = {
       enabled: true,
       resolution: '2560x1440',
     },
-    vscode: {
-      themeName: 'Everforest Dark',
-    },
   },
   'tokyo-night': {
     id: 'tokyo-night',
@@ -252,9 +222,6 @@ export const THEME_MANIFESTS: Record<ThemeId, SystemThemeManifest> = {
       file: 'background.jpg',
       enabled: true,
       resolution: '3840x2160',
-    },
-    vscode: {
-      themeName: 'Tokyo Night',
     },
   },
 }

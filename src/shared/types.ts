@@ -60,14 +60,6 @@ export interface TerminalConfig {
   opacity: number
 }
 
-/**
- * VSCode configuration placeholder DTO
- */
-export interface VSCodeConfig {
-  themeName: string
-  iconTheme: string
-  fontFamily: string
-}
 
 /**
  * Package status placeholder DTO

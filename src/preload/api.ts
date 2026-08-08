@@ -14,9 +14,6 @@ export const api: PegasusApi = {
   terminal: {
     getConfig: () => ipcRenderer.invoke(IpcChannels.TERMINAL_GET_CONFIG),
   },
-  vscode: {
-    getConfig: () => ipcRenderer.invoke(IpcChannels.VSCODE_GET_CONFIG),
-  },
   packages: {
     list: () => ipcRenderer.invoke(IpcChannels.PACKAGES_LIST),
   },

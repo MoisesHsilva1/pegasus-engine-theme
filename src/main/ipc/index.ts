@@ -23,15 +23,6 @@ export function registerIpcHandlers(engine: PegasusEngine): void {
     }
   })
 
-  ipcMain.handle(IpcChannels.VSCODE_GET_CONFIG, async () => {
-    try {
-      const data = await engine.vscode.getVSCodeConfig()
-      return { success: true, data }
-    } catch (err) {
-      return { success: false, error: String(err) }
-    }
-  })
-
   ipcMain.handle(IpcChannels.PACKAGES_LIST, async () => {
     try {
       const data = await engine.packages.listPackages()

@@ -6,7 +6,6 @@ import type {
   TerminalConfig,
   ThemeApplyResult,
   ThemeProfile,
-  VSCodeConfig,
 } from './types'
 
 export enum IpcChannels {
@@ -15,7 +14,6 @@ export enum IpcChannels {
   THEMES_GET_ACTIVE = 'themes:get-active',
   THEMES_APPLY = 'themes:apply',
   TERMINAL_GET_CONFIG = 'terminal:get-config',
-  VSCODE_GET_CONFIG = 'vscode:get-config',
   PACKAGES_LIST = 'packages:list',
   SETTINGS_GET = 'settings:get',
   SETTINGS_UPDATE = 'settings:update',
@@ -33,9 +31,6 @@ export interface PegasusApi {
   terminal: {
     getConfig: () => Promise<IpcResult<TerminalConfig>>
   }
-  vscode: {
-    getConfig: () => Promise<IpcResult<VSCodeConfig>>
-  }
   packages: {
     list: () => Promise<IpcResult<PackageStatus[]>>
   }
@@ -44,3 +39,4 @@ export interface PegasusApi {
     update: (settings: Partial<AppSettings>) => Promise<IpcResult<AppSettings>>
   }
 }
+

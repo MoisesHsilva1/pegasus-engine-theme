@@ -18,7 +18,6 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "theme:diagnose-wallpaper": "tsx scripts/diagnose-wallpaper.ts",
     "package": "pnpm build && electron-builder --linux rpm"
   },
   "dependencies": {

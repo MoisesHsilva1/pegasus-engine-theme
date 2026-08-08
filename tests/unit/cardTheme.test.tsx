@@ -7,9 +7,6 @@ describe('CardTheme component', () => {
     name: 'Nordic Dark',
     description: 'Arctic ice blue palette for developer workspace.',
     badgeText: 'Official',
-    vscode: {
-      themeName: 'Nord Theme',
-    },
     palette: [
       { label: 'Background', color: '#2e3440' },
       { label: 'Foreground', color: '#d8dee9' },
@@ -42,7 +39,6 @@ describe('CardTheme component', () => {
     expect(expandButton).toHaveAttribute('aria-expanded', 'false')
 
     // Expanded details NOT visible yet
-    expect(screen.queryByText('VS Code Theme')).not.toBeInTheDocument()
     expect(screen.queryByText('Color Palette')).not.toBeInTheDocument()
     expect(screen.queryByText('Wallpaper')).not.toBeInTheDocument()
   })
@@ -76,7 +72,7 @@ describe('CardTheme component', () => {
     expect(screen.getByText('Applied GNOME colors')).toBeInTheDocument()
   })
 
-  it('expands theme details upon clicking Expand button and shows VS Code theme, palette, wallpaper', () => {
+  it('expands theme details upon clicking Expand button and shows palette and wallpaper', () => {
     const handleApply = vi.fn()
     render(<CardTheme {...defaultProps} onApply={handleApply} />)
 
@@ -85,10 +81,6 @@ describe('CardTheme component', () => {
 
     expect(expandButton).toHaveAttribute('aria-expanded', 'true')
     expect(screen.getByRole('button', { name: /Collapse Nordic Dark theme details/i })).toBeInTheDocument()
-
-    // VS Code details
-    expect(screen.getByText('VS Code Theme')).toBeInTheDocument()
-    expect(screen.getByText('Nord Theme')).toBeInTheDocument()
 
     // Color palette details
     expect(screen.getByText('Color Palette')).toBeInTheDocument()
@@ -111,12 +103,12 @@ describe('CardTheme component', () => {
 
     const expandButton = screen.getByRole('button', { name: /Expand Nordic Dark theme details/i })
     fireEvent.click(expandButton)
-    expect(screen.getByText('VS Code Theme')).toBeInTheDocument()
+    expect(screen.getByText('Color Palette')).toBeInTheDocument()
 
     const collapseButton = screen.getByRole('button', { name: /Collapse Nordic Dark theme details/i })
     fireEvent.click(collapseButton)
 
-    expect(screen.queryByText('VS Code Theme')).not.toBeInTheDocument()
+    expect(screen.queryByText('Color Palette')).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Expand Nordic Dark theme details/i })).toHaveAttribute('aria-expanded', 'false')
   })
 

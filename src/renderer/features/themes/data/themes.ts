@@ -19,7 +19,6 @@ export const themes: ThemeDefinition[] = Object.values(THEME_MANIFESTS).map((man
     id: manifest.id,
     name: manifest.name,
     description: manifest.description,
-    vscode: manifest.vscode,
     palette: [
       { label: 'Background', color: manifest.tokens.background },
       { label: 'Foreground', color: manifest.tokens.foreground },

@@ -32,7 +32,7 @@ export function HomeView({ onNavigate }: HomeViewProps) {
               Your environment, customized your way.
             </h2>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Centralized desktop customization engine for Fedora Linux. Manage GNOME Shell themes, VS Code color profiles, Alacritty terminal configurations, wallpapers, and developer tool styling from a single unified hub.
+              Centralized desktop customization engine for Fedora Linux. Manage GNOME Shell themes, Alacritty terminal configurations, wallpapers, and developer tool styling from a single unified hub.
             </p>
           </div>
 
@@ -99,7 +99,7 @@ export function HomeView({ onNavigate }: HomeViewProps) {
                 </h3>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed pl-9">
-                Automated synchronization across GNOME Shell, VS Code, Alacritty, Neovim, Btop, and Zellij.
+                Automated synchronization across GNOME Shell, Alacritty, and Zellij.
               </p>
             </div>
             <Cpu className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />

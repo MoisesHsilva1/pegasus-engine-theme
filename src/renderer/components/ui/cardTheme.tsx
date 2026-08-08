@@ -2,16 +2,12 @@ import * as React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Palette, ChevronDown, ChevronUp, Check, Terminal, AlertTriangle, XCircle, Loader2, Code2 } from 'lucide-react'
+import { Palette, ChevronDown, ChevronUp, Check, Terminal, AlertTriangle, XCircle, Loader2 } from 'lucide-react'
 import type { ThemeOperationResult } from '@shared/types'
 
 export interface ColorSwatch {
   label: string
   color: string
-}
-
-export interface VSCodeThemeDetails {
-  themeName: string
 }
 
 export interface WallpaperDetails {
@@ -29,8 +25,6 @@ export interface CardThemeProps {
   isApplying?: boolean
   isApplyingAny?: boolean
   operations?: ThemeOperationResult[]
-  vscode?: { themeName: string } | string | VSCodeThemeDetails
-  vscodeTheme?: string | VSCodeThemeDetails
   palette?: ColorSwatch[] | Record<string, string>
   wallpaper?: string | WallpaperDetails
   onApply?: () => void
@@ -53,26 +47,6 @@ function normalizePalette(palette?: ColorSwatch[] | Record<string, string>): Col
     { label: 'Accent', color: '#26332c' },
     { label: 'Border', color: '#2d3033' },
   ]
-}
-
-function normalizeVSCodeTheme(
-  name: string,
-  vscodeConfig?: { themeName: string } | string | VSCodeThemeDetails,
-  fallbackTheme?: string | VSCodeThemeDetails
-): VSCodeThemeDetails {
-  const source = vscodeConfig || fallbackTheme
-  if (typeof source === 'string') {
-    return { themeName: source }
-  }
-  if (source && typeof source === 'object') {
-    if ('themeName' in source && typeof source.themeName === 'string') {
-      return { themeName: source.themeName }
-    }
-    if ('name' in source && typeof source.name === 'string') {
-      return { themeName: source.name }
-    }
-  }
-  return { themeName: `${name} Theme` }
 }
 
 function normalizeWallpaper(name: string, wallpaper?: string | WallpaperDetails): WallpaperDetails {
@@ -103,8 +77,6 @@ const CardTheme = ({
   isApplying = false,
   isApplyingAny = false,
   operations,
-  vscode,
-  vscodeTheme,
   palette,
   wallpaper,
   onApply,
@@ -119,7 +91,6 @@ const CardTheme = ({
   }, [isApplying, operations])
 
   const normalizedPalette = normalizePalette(palette)
-  const normalizedVSCode = normalizeVSCodeTheme(name, vscode, vscodeTheme)
   const normalizedWallpaper = normalizeWallpaper(name, wallpaper)
   const detailsId = `theme-details-${name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`
   const failedOps = operations?.filter((op) => op.status === 'FAILED' || op.status === 'WARNING')
@@ -326,20 +297,6 @@ const CardTheme = ({
               )}
             </div>
           )}
-
-          {/* 2. VS Code Theme Section */}
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-              <Code2 className="h-3.5 w-3.5 text-primary" />
-              <span>VS Code Theme</span>
-            </div>
-            <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-background/50 p-3">
-              <span className="text-xs font-medium text-foreground">{normalizedVSCode.themeName}</span>
-              <Badge variant="secondary" className="font-mono text-[10px]">
-                Paired Editor Profile
-              </Badge>
-            </div>
-          </div>
 
           {/* 3. Color Palette Section */}
           <div className="space-y-1.5">

@@ -70,10 +70,7 @@ export function CurrentTheme({ onNavigate }: CurrentThemeProps) {
 
   const activeTargets = [
     { name: 'GNOME Shell', status: 'Active' },
-    { name: 'VS Code', status: 'Active' },
     { name: 'Alacritty', status: 'Active' },
-    { name: 'Neovim', status: 'Active' },
-    { name: 'Btop', status: 'Active' },
     { name: 'Zellij', status: 'Active' },
   ]
 

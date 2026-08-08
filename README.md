@@ -1,6 +1,6 @@
 # Pegasus Theme
 
-**Pegasus Theme** is a native Fedora-focused Linux desktop application that provides a graphical management interface for the Pegasus environment (themes, terminal profiles, VS Code settings, icons, fonts, wallpapers, configurations, and packages).
+**Pegasus Theme** is a native Fedora-focused Linux desktop application that provides a graphical management interface for the Pegasus environment (themes, terminal profiles, icons, fonts, wallpapers, configurations, and packages).
 
 ---
 
@@ -127,14 +127,14 @@ Built packages will be output to `release/` (including `.rpm` packages for Fedor
 pegasus-engineer/
 ├── src/
 │   ├── main/           # Privileged Electron main process
-│   │   ├── engine/     # Pegasus Engine services (Themes, System, Terminal, VSCode, Packages)
+│   │   ├── engine/     # Pegasus Engine services (Themes, System, Terminal, Packages)
 │   │   ├── ipc/        # Thin IPC handlers mapping IPC channels to Engine services
 │   │   └── index.ts    # Electron app entry & BrowserWindow security config
 │   ├── preload/        # Secure contextBridge API definition
 │   ├── renderer/       # React UI (Vite, Tailwind, shadcn/ui)
 │   │   ├── app/        # App desktop shell
 │   │   ├── components/ # UI primitives (shadcn) and layout components
-│   │   ├── features/   # Feature views (system, themes, terminal, vscode, settings)
+│   │   ├── features/   # Feature views (home, themes)
 │   │   ├── lib/        # UI helpers
 │   │   └── types/      # Renderer TypeScript declarations
 │   └── shared/         # Shared IPC channel constants & DTO interfaces

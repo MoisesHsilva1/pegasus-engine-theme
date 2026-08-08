@@ -69,7 +69,6 @@ export function ThemesView() {
           key={theme.name}
           name={theme.name}
           description={theme.description}
-          vscodeTheme={theme.vscodeTheme}
           palette={theme.palette}
           wallpaper={theme.wallpaper}
           isApplied={appliedThemeId === theme.id}
