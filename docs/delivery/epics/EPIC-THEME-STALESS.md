@@ -1,4 +1,4 @@
-# EPIC-THEME-STALESS — Stateless Theme Interface
+# EPIC-THEME-STATELESS — Stateless Theme Interface
 
 ## Goal
 
