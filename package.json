@@ -67,6 +67,12 @@
       "dist/**/*",
       "dist-electron/**/*"
     ],
+    "extraResources": [
+      {
+        "from": "src/themes",
+        "to": "themes"
+      }
+    ],
     "linux": {
       "target": [
         "AppImage"

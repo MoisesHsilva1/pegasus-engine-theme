@@ -75,7 +75,7 @@ export const THEME_MANIFESTS: Record<ThemeId, SystemThemeManifest> = {
       border: '#3c3836',
     },
     wallpaper: {
-      file: 'background.jpg',
+      file: 'background.png',
       enabled: true,
       resolution: '2560x1440',
     },

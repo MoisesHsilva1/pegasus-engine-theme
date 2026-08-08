@@ -1,8 +1,13 @@
 import { execFile } from 'child_process'
-import { promises as fs, existsSync, statSync } from 'fs'
-import path from 'path'
+import { existsSync, statSync } from 'fs'
+import fs from 'fs/promises'
 import os from 'os'
-import type { ThemeOperationResult } from '@shared/types'
+import path from 'path'
+import { promisify } from 'util'
+import type { ThemeOperationResult, WallpaperInfo } from '@shared/types'
+import { ThemePathResolver } from './resolver'
+
+const execFileAsync = promisify(execFile)
 
 export const SUPPORTED_WALLPAPER_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'] as const
 export type SupportedWallpaperExtension = (typeof SUPPORTED_WALLPAPER_EXTENSIONS)[number]
@@ -14,7 +19,7 @@ export interface WallpaperBackup {
 
 export class WallpaperService {
   private getHomeDir(): string {
-    return os.homedir()
+    return process.env.HOME || os.homedir()
   }
 
   private getWallpapersDir(): string {
@@ -22,57 +27,134 @@ export class WallpaperService {
   }
 
   /**
-   * Safely executes an ELF binary directly using execFile (without passing to bash)
+   * Safe binary execution helper preventing shell interpolation injection
    */
-  public execBinary(
+  private async execBinary(
     binaryPath: string,
-    args: string[] = [],
-    envExtra: Record<string, string> = {}
+    args: string[]
   ): Promise<{ stdout: string; stderr: string; exitCode: number }> {
-    return new Promise((resolve) => {
-      const env = {
-        ...process.env,
-        ...envExtra,
-      }
-
-      execFile(binaryPath, args, { env, timeout: 5000 }, (error, stdout, stderr) => {
-        const exitCode = error && typeof error.code === 'number' ? error.code : error ? 1 : 0
-        resolve({
-          stdout: stdout.toString(),
-          stderr: stderr.toString(),
-          exitCode,
-        })
+    try {
+      const { stdout, stderr } = await execFileAsync(binaryPath, args, {
+        env: process.env,
       })
-    })
+      return { stdout: stdout.trim(), stderr: stderr.trim(), exitCode: 0 }
+    } catch (err: unknown) {
+      const execErr = err as { stdout?: string; stderr?: string; code?: number }
+      return {
+        stdout: execErr.stdout ? execErr.stdout.trim() : '',
+        stderr: execErr.stderr ? execErr.stderr.trim() : String(err),
+        exitCode: typeof execErr.code === 'number' ? execErr.code : 1,
+      }
+    }
   }
 
   /**
-   * Scans src/themes/{theme}/wallpaper for supported image files (.jpg, .jpeg, .png, .webp)
+   * Scans theme directory (wallpaper/ subfolder, theme root, or bundled fallback) for supported image files (.jpg, .jpeg, .png, .webp)
    */
   public async resolveWallpaper(themeDir: string): Promise<string | null> {
+    // 1. Check themeDir/wallpaper subfolder
     const wallpaperDir = path.join(themeDir, 'wallpaper')
-    if (!existsSync(wallpaperDir)) {
-      return null
-    }
-
-    try {
-      const entries = await fs.readdir(wallpaperDir, { withFileTypes: true })
-      for (const entry of entries) {
-        if (entry.isFile()) {
-          const ext = path.extname(entry.name).toLowerCase()
-          if (SUPPORTED_WALLPAPER_EXTENSIONS.includes(ext as SupportedWallpaperExtension)) {
-            const fullPath = path.join(wallpaperDir, entry.name)
-            if (this.validateWallpaper(fullPath)) {
-              return fullPath
+    if (existsSync(wallpaperDir)) {
+      try {
+        const entries = await fs.readdir(wallpaperDir, { withFileTypes: true })
+        for (const entry of entries) {
+          if (entry.isFile()) {
+            const ext = path.extname(entry.name).toLowerCase()
+            if (SUPPORTED_WALLPAPER_EXTENSIONS.includes(ext as SupportedWallpaperExtension)) {
+              const fullPath = path.join(wallpaperDir, entry.name)
+              if (this.validateWallpaper(fullPath)) {
+                return fullPath
+              }
             }
           }
         }
+      } catch {
+        // Ignore read errors
       }
-    } catch {
-      return null
+    }
+
+    // 2. Check themeDir root directory directly (for custom/legacy user theme directories without a wallpaper subfolder)
+    if (existsSync(themeDir)) {
+      try {
+        const entries = await fs.readdir(themeDir, { withFileTypes: true })
+        for (const entry of entries) {
+          if (entry.isFile()) {
+            const ext = path.extname(entry.name).toLowerCase()
+            if (SUPPORTED_WALLPAPER_EXTENSIONS.includes(ext as SupportedWallpaperExtension)) {
+              const fullPath = path.join(themeDir, entry.name)
+              if (this.validateWallpaper(fullPath)) {
+                return fullPath
+              }
+            }
+          }
+        }
+      } catch {
+        // Ignore read errors
+      }
+    }
+
+    // 3. Fallback: If themeDir lacks a wallpaper asset, check the bundled theme resources
+    const themeId = path.basename(themeDir)
+    const bundledThemesDir = ThemePathResolver.getBundledThemesDir()
+
+    if (bundledThemesDir) {
+      const bundledWallpaperDir = path.join(bundledThemesDir, themeId, 'wallpaper')
+      if (existsSync(bundledWallpaperDir)) {
+        try {
+          const entries = await fs.readdir(bundledWallpaperDir, { withFileTypes: true })
+          for (const entry of entries) {
+            if (entry.isFile()) {
+              const ext = path.extname(entry.name).toLowerCase()
+              if (SUPPORTED_WALLPAPER_EXTENSIONS.includes(ext as SupportedWallpaperExtension)) {
+                const fullPath = path.join(bundledWallpaperDir, entry.name)
+                if (this.validateWallpaper(fullPath)) {
+                  return fullPath
+                }
+              }
+            }
+          }
+        } catch {
+          // Ignore fallback errors
+        }
+      }
     }
 
     return null
+  }
+
+  /**
+   * Discovers current wallpaper file and computes deterministic version metadata based on filesystem state
+   */
+  public async getWallpaperInfo(_themeId: string, themeDir: string): Promise<WallpaperInfo> {
+    const filePath = await this.resolveWallpaper(themeDir)
+    if (!filePath || !this.validateWallpaper(filePath)) {
+      return {
+        file: '',
+        resolution: '3840x2160',
+        hasAsset: false,
+      }
+    }
+
+    try {
+      const stat = statSync(filePath)
+      const version = `${Math.floor(stat.mtimeMs)}-${stat.size}`
+      const previewUrl = `pegasus-asset://${filePath}?v=${version}`
+
+      return {
+        file: path.basename(filePath),
+        resolution: '3840x2160',
+        previewUrl,
+        version,
+        hasAsset: true,
+        filePath,
+      }
+    } catch {
+      return {
+        file: path.basename(filePath),
+        resolution: '3840x2160',
+        hasAsset: false,
+      }
+    }
   }
 
   /**
@@ -96,7 +178,7 @@ export class WallpaperService {
   }
 
   /**
-   * Copies theme wallpaper asset to persistent storage (~/.local/share/pegasus/wallpapers/{themeId}{ext})
+   * Copies theme wallpaper asset to persistent storage (~/.local/share/pegasus/wallpapers/{themeId}-{version}{ext})
    */
   public async copyWallpaperToPersistentLocation(
     themeId: string,
@@ -105,13 +187,36 @@ export class WallpaperService {
     const wallpapersDir = this.getWallpapersDir()
     await fs.mkdir(wallpapersDir, { recursive: true })
 
+    const statSrc = await fs.stat(srcPath)
+    const version = `${Math.floor(statSrc.mtimeMs)}-${statSrc.size}`
     const ext = path.extname(srcPath).toLowerCase()
-    const targetPath = path.join(wallpapersDir, `${themeId}${ext}`)
+    const targetFileName = `${themeId}-${version}${ext}`
+    const targetPath = path.join(wallpapersDir, targetFileName)
+
+    // Remove any stale persistent wallpaper files for this theme
+    if (existsSync(wallpapersDir)) {
+      try {
+        const existingFiles = await fs.readdir(wallpapersDir)
+        for (const file of existingFiles) {
+          if (file.startsWith(`${themeId}-`) || file.startsWith(`${themeId}.`)) {
+            if (file !== targetFileName) {
+              try {
+                await fs.unlink(path.join(wallpapersDir, file))
+              } catch {
+                // Non-fatal cleanup
+              }
+            }
+          }
+        }
+      } catch {
+        // Non-fatal cleanup
+      }
+    }
 
     await fs.copyFile(srcPath, targetPath)
 
-    const stat = await fs.stat(targetPath)
-    if (stat.size === 0) {
+    const statTarget = await fs.stat(targetPath)
+    if (statTarget.size === 0) {
       throw new Error('Copied wallpaper file is empty (0 bytes).')
     }
 
@@ -186,20 +291,29 @@ export class WallpaperService {
    * Full pipeline execution: Resolve -> Validate -> Persistent Copy -> GNOME Apply -> Verification
    */
   public async applyWallpaper(themeId: string, themeDir: string): Promise<ThemeOperationResult> {
-    // 1. Resolve wallpaper asset inside src/themes/{theme}/wallpaper
+    const isProd = ThemePathResolver.isPackaged()
+    console.log(
+      `[WallpaperService] Resolving wallpaper for themeId '${themeId}' (environment: ${isProd ? 'production' : 'development'}, themeDir: '${themeDir}')`
+    )
+
+    // 1. Resolve wallpaper asset inside theme directory or bundled resources
     const wallpaperFile = await this.resolveWallpaper(themeDir)
 
     if (!wallpaperFile) {
+      console.warn(`[WallpaperService] No supported wallpaper asset found for theme '${themeId}'.`)
       return {
         name: 'Wallpaper',
         status: 'SKIPPED',
-        message: `No supported wallpaper asset (.jpg, .jpeg, .png, .webp) found in '${path.join(themeDir, 'wallpaper')}'.`,
+        message: `No supported wallpaper asset (.jpg, .jpeg, .png, .webp) found for theme '${themeId}'.`,
       }
     }
 
     // 2. Validate format
     const ext = path.extname(wallpaperFile).toLowerCase()
     if (!SUPPORTED_WALLPAPER_EXTENSIONS.includes(ext as SupportedWallpaperExtension)) {
+      console.warn(
+        `[WallpaperService] Wallpaper format '${ext}' not supported for theme '${themeId}'.`
+      )
       return {
         name: 'Wallpaper',
         status: 'WARNING',
@@ -216,8 +330,25 @@ export class WallpaperService {
       // 4. Copy to persistent storage (~/.local/share/pegasus/wallpapers/{themeId}{ext})
       const persistentPath = await this.copyWallpaperToPersistentLocation(themeId, wallpaperFile)
 
-      // 5. Apply GNOME wallpaper settings
+      // 5. Apply GNOME wallpaper settings with reset toggle to force GNOME background daemon reload
       const wallpaperUri = `file://${persistentPath}`
+      console.log(
+        `[WallpaperService] Applying wallpaper '${wallpaperFile}' -> persistent location '${persistentPath}' (URI: '${wallpaperUri}')`
+      )
+
+      // Reset URI briefly to empty string to ensure dconf fires a change signal even if URI string is identical
+      await this.execBinary('/usr/bin/gsettings', [
+        'set',
+        'org.gnome.desktop.background',
+        'picture-uri',
+        '',
+      ])
+      await this.execBinary('/usr/bin/gsettings', [
+        'set',
+        'org.gnome.desktop.background',
+        'picture-uri-dark',
+        '',
+      ])
 
       const resUri = await this.execBinary('/usr/bin/gsettings', [
         'set',
@@ -253,6 +384,7 @@ export class WallpaperService {
         )
       }
 
+      console.log(`[WallpaperService] Successfully applied wallpaper for theme '${themeId}'.`)
       return {
         name: 'Wallpaper',
         status: 'SUCCESS',
@@ -263,6 +395,7 @@ export class WallpaperService {
       await this.rollbackWallpaperSettings(backup)
 
       const reason = err instanceof Error ? err.message : String(err)
+      console.warn(`[WallpaperService] Failed to apply wallpaper for theme '${themeId}': ${reason}`)
       return {
         name: 'Wallpaper',
         status: 'WARNING',
