@@ -71,10 +71,13 @@ export interface PackageStatus {
   version?: string
 }
 
+export type Language = 'en' | 'pt-BR'
+
 /**
  * Application Settings DTO
  */
 export interface AppSettings {
+  language: Language
   darkMode: boolean
   autoApplyTheme: boolean
   notificationsEnabled: boolean

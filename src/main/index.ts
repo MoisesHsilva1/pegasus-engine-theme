@@ -1,4 +1,4 @@
-import { app, BrowserWindow, nativeTheme } from 'electron'
+import { app, BrowserWindow, nativeTheme, Menu } from 'electron'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -25,6 +25,7 @@ function createWindow(): void {
     title: 'Pegasus Engine Theme',
     backgroundColor: '#090d16',
     show: false,
+    autoHideMenuBar: true,
     webPreferences: {
       preload: preloadPath,
       nodeIntegration: false,
@@ -53,6 +54,9 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  // Disable default Electron application menu bar (File, Edit, View, Window, Help)
+  Menu.setApplicationMenu(null)
+
   // Lock theme source to fixed dark mode to disable automatic OS theme synchronization
   nativeTheme.themeSource = 'dark'
 

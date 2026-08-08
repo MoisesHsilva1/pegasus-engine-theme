@@ -5,6 +5,7 @@ import { Palette, CheckCircle2, ArrowRight } from 'lucide-react'
 import { themes } from '../themes/data/themes'
 import type { ColorSwatch, WallpaperDetails } from '@/components/ui/cardTheme'
 import type { ActiveNav } from '@/components/shared/Sidebar'
+import { useTranslation, type TranslationKey } from '@/context/LanguageContext'
 
 interface CurrentThemeProps {
   onNavigate?: (nav: ActiveNav) => void
@@ -51,6 +52,7 @@ function normalizeWallpaper(rawWallpaper?: string | WallpaperDetails): Wallpaper
 }
 
 export function CurrentTheme({ onNavigate }: CurrentThemeProps) {
+  const { t } = useTranslation()
   const [activeThemeId, setActiveThemeId] = React.useState<string>('matte-black')
   const [imgFailed, setImgFailed] = React.useState(false)
 
@@ -63,7 +65,8 @@ export function CurrentTheme({ onNavigate }: CurrentThemeProps) {
 
   const activeTheme = themes.find((t) => t.id === activeThemeId) || themes[0]
   const activeName = activeTheme?.name || 'Matte Black'
-  const activeDescription = activeTheme?.description || 'Dark graphite developer theme with desaturated sage accents.'
+  const activeDescriptionKey = `themeDescriptions.${activeTheme?.id}` as TranslationKey
+  const activeDescription = t(activeDescriptionKey) || activeTheme?.description
 
   const palette = normalizePalette(activeTheme?.palette)
   const wallpaper = normalizeWallpaper(activeTheme?.wallpaper)
@@ -79,11 +82,17 @@ export function CurrentTheme({ onNavigate }: CurrentThemeProps) {
 
   const hasValidImage = Boolean(wallpaper.previewUrl) && !imgFailed
 
+  const getSwatchLabel = (label: string) => {
+    const swatchKey = `cardTheme.swatches.${label.toLowerCase()}` as TranslationKey
+    const translated = t(swatchKey)
+    return translated || label
+  }
+
   return (
     <section className="space-y-3">
       <div className="flex items-center justify-between">
         <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-          Active Environment Theme
+          {t('currentTheme.title')}
         </h2>
         {onNavigate && (
           <Button
@@ -92,7 +101,7 @@ export function CurrentTheme({ onNavigate }: CurrentThemeProps) {
             onClick={() => onNavigate('themes')}
             className="h-6 text-xs text-primary hover:text-primary-hover gap-1 px-2 font-medium"
           >
-            <span>Browse All Themes</span>
+            <span>{t('currentTheme.browseAll')}</span>
             <ArrowRight className="h-3 w-3" />
           </Button>
         )}
@@ -113,7 +122,7 @@ export function CurrentTheme({ onNavigate }: CurrentThemeProps) {
                       {activeName}
                     </h3>
                     <Badge variant="accent" className="text-[10px] py-0.5 px-2 font-mono bg-success/15 text-success border border-success/30">
-                      Applied
+                      {t('currentTheme.applied')}
                     </Badge>
                     <span className="text-[11px] font-mono text-muted-foreground">Graphite</span>
                   </div>
@@ -126,7 +135,7 @@ export function CurrentTheme({ onNavigate }: CurrentThemeProps) {
               {/* Color Swatch Ribbon */}
               <div className="rounded-lg bg-background p-2.5 border border-border space-y-1.5">
                 <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider block">
-                  Active Palette Tokens
+                  {t('currentTheme.activePaletteTokens')}
                 </span>
                 <div className="grid grid-cols-5 gap-1.5">
                   {palette.map((swatch) => (
@@ -139,7 +148,9 @@ export function CurrentTheme({ onNavigate }: CurrentThemeProps) {
                         style={{ backgroundColor: swatch.color }}
                       />
                       <div className="min-w-0 flex-1 truncate">
-                        <p className="text-[9px] font-medium text-muted-foreground truncate">{swatch.label}</p>
+                        <p className="text-[9px] font-medium text-muted-foreground truncate">
+                          {getSwatchLabel(swatch.label)}
+                        </p>
                         <p className="text-[9px] font-mono text-foreground font-semibold">{swatch.color}</p>
                       </div>
                     </div>
@@ -150,7 +161,9 @@ export function CurrentTheme({ onNavigate }: CurrentThemeProps) {
 
             {/* Target Integrations */}
             <div className="pt-2 border-t border-border flex flex-wrap items-center gap-2">
-              <span className="text-xs font-medium text-muted-foreground mr-1">Applied Targets:</span>
+              <span className="text-xs font-medium text-muted-foreground mr-1">
+                {t('currentTheme.appliedTargets')}
+              </span>
               {activeTargets.map((target) => (
                 <div
                   key={target.name}
@@ -169,7 +182,7 @@ export function CurrentTheme({ onNavigate }: CurrentThemeProps) {
               {hasValidImage ? (
                 <img
                   src={wallpaper.previewUrl}
-                  alt={`${activeName} wallpaper preview`}
+                  alt={t('currentTheme.wallpaperPreviewAlt', { name: activeName })}
                   onError={() => setImgFailed(true)}
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
@@ -199,7 +212,7 @@ export function CurrentTheme({ onNavigate }: CurrentThemeProps) {
                     </span>
                   </div>
                   <Badge variant="secondary" className="bg-white/10 text-[9px] py-0 px-1 font-mono">
-                    Active
+                    {t('cardTheme.active')}
                   </Badge>
                 </div>
 
@@ -211,8 +224,8 @@ export function CurrentTheme({ onNavigate }: CurrentThemeProps) {
                     <span style={{ color: accentColor }}>"{activeName}"</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <span className="text-white/50">status:</span>
-                    <span className="text-emerald-400 font-semibold">active</span>
+                    <span className="text-white/50">{t('currentTheme.status')}</span>
+                    <span className="text-emerald-400 font-semibold">{t('currentTheme.active')}</span>
                   </div>
                 </div>
 
@@ -222,7 +235,7 @@ export function CurrentTheme({ onNavigate }: CurrentThemeProps) {
                       key={swatch.label}
                       className="h-2 flex-1 rounded-xs border border-white/20 shadow-2xs"
                       style={{ backgroundColor: swatch.color }}
-                      title={`${swatch.label}: ${swatch.color}`}
+                      title={`${getSwatchLabel(swatch.label)}: ${swatch.color}`}
                     />
                   ))}
                 </div>

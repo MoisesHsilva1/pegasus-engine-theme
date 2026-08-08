@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Palette, ChevronDown, ChevronUp, Check, Terminal, AlertTriangle, XCircle, Loader2 } from 'lucide-react'
 import type { ThemeOperationResult } from '@shared/types'
+import { useTranslation, type TranslationKey } from '@/context/LanguageContext'
 
 export interface ColorSwatch {
   label: string
@@ -72,7 +73,7 @@ function normalizeWallpaper(name: string, wallpaper?: string | WallpaperDetails)
 const CardTheme = ({
   name,
   description,
-  badgeText = 'Available',
+  badgeText,
   isApplied = false,
   isApplying = false,
   isApplyingAny = false,
@@ -81,6 +82,7 @@ const CardTheme = ({
   wallpaper,
   onApply,
 }: CardThemeProps) => {
+  const { t } = useTranslation()
   const [isExpanded, setIsExpanded] = React.useState(false)
   const [imgFailed, setImgFailed] = React.useState(false)
 
@@ -90,6 +92,7 @@ const CardTheme = ({
     }
   }, [isApplying, operations])
 
+  const displayBadgeText = badgeText || t('cardTheme.available')
   const normalizedPalette = normalizePalette(palette)
   const normalizedWallpaper = normalizeWallpaper(name, wallpaper)
   const detailsId = `theme-details-${name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`
@@ -101,6 +104,12 @@ const CardTheme = ({
   const borderColor = normalizedPalette.find((p) => p.label.toLowerCase() === 'border')?.color || '#2d3033'
 
   const hasValidImage = Boolean(normalizedWallpaper.previewUrl) && !imgFailed
+
+  const getSwatchLabel = (label: string) => {
+    const swatchKey = `cardTheme.swatches.${label.toLowerCase()}` as TranslationKey
+    const translated = t(swatchKey)
+    return translated || label
+  }
 
   return (
     <Card
@@ -114,7 +123,7 @@ const CardTheme = ({
 
       <div className="flex flex-col gap-5 p-5 md:flex-row md:items-stretch justify-between">
         {/* Left Column: Theme Information & Actions */}
-        <section aria-label={`${name} theme details`} className="flex flex-1 flex-col justify-between min-w-0">
+        <section aria-label={t('cardTheme.detailsAria', { name })} className="flex flex-1 flex-col justify-between min-w-0">
           <CardHeader className="p-0 space-y-3">
             <div className="flex items-start gap-3">
               <div
@@ -132,11 +141,11 @@ const CardTheme = ({
                 <div className="flex flex-wrap items-center gap-2">
                   <CardTitle className="text-base font-semibold text-foreground tracking-tight">{name}</CardTitle>
                   <Badge variant="secondary" className="font-mono text-[11px] px-2 py-0.5">
-                    {badgeText}
+                    {displayBadgeText}
                   </Badge>
                   {isApplied && (
                     <Badge variant="outline" className="text-[10px] font-mono border-primary/50 text-primary bg-primary/10">
-                      Active
+                      {t('cardTheme.active')}
                     </Badge>
                   )}
                 </div>
@@ -150,7 +159,7 @@ const CardTheme = ({
             {isApplying ? (
               <Button variant="default" size="sm" disabled className="min-w-[95px] gap-1.5 h-8 text-xs">
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                <span>Applying...</span>
+                <span>{t('cardTheme.applying')}</span>
               </Button>
             ) : isApplied ? (
               <Badge
@@ -158,7 +167,7 @@ const CardTheme = ({
                 className="flex h-8 items-center gap-1.5 border border-success/30 bg-success/15 px-3 font-mono text-xs text-success"
               >
                 <Check className="h-3.5 w-3.5 text-success" />
-                Applied
+                {t('cardTheme.applied')}
               </Badge>
             ) : (
               <Button
@@ -166,10 +175,10 @@ const CardTheme = ({
                 size="sm"
                 onClick={onApply}
                 disabled={isApplyingAny}
-                aria-label={`Apply ${name} theme`}
+                aria-label={t('cardTheme.applyAria', { name })}
                 className="h-8 px-4 text-xs font-medium"
               >
-                Apply
+                {t('cardTheme.apply')}
               </Button>
             )}
 
@@ -179,22 +188,22 @@ const CardTheme = ({
               onClick={() => setIsExpanded(!isExpanded)}
               aria-expanded={isExpanded}
               aria-controls={detailsId}
-              aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${name} theme details`}
+              aria-label={t(isExpanded ? 'cardTheme.collapseAria' : 'cardTheme.expandAria', { name })}
               className="h-8 gap-1.5 text-xs"
             >
-              <span>{isExpanded ? 'Collapse' : 'Expand'}</span>
+              <span>{isExpanded ? t('cardTheme.collapse') : t('cardTheme.expand')}</span>
               {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
             </Button>
           </div>
         </section>
 
         {/* Right Column: Dynamic Theme Visual Preview Frame */}
-        <section aria-label={`${name} wallpaper preview`} className="w-full md:w-[300px] shrink-0">
+        <section aria-label={t('cardTheme.wallpaperPreviewAlt', { name })} className="w-full md:w-[300px] shrink-0">
           <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-border/80 bg-background/50 shadow-xs group">
             {hasValidImage ? (
               <img
                 src={normalizedWallpaper.previewUrl}
-                alt={`${name} wallpaper preview`}
+                alt={t('cardTheme.wallpaperPreviewAlt', { name })}
                 onError={() => setImgFailed(true)}
                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
@@ -236,8 +245,10 @@ const CardTheme = ({
                   <span style={{ color: accentColor }}>"{name}"</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <span className="text-white/50">status:</span>
-                  <span className="text-emerald-400 font-semibold">{isApplied ? 'active' : 'ready'}</span>
+                  <span className="text-white/50">{t('currentTheme.status')}</span>
+                  <span className="text-emerald-400 font-semibold">
+                    {isApplied ? t('currentTheme.active') : t('cardTheme.ready')}
+                  </span>
                 </div>
               </div>
 
@@ -248,7 +259,7 @@ const CardTheme = ({
                     key={swatch.label}
                     className="h-2 flex-1 rounded-xs border border-white/20 shadow-2xs"
                     style={{ backgroundColor: swatch.color }}
-                    title={`${swatch.label}: ${swatch.color}`}
+                    title={`${getSwatchLabel(swatch.label)}: ${swatch.color}`}
                   />
                 ))}
               </div>
@@ -265,7 +276,7 @@ const CardTheme = ({
             <div className="space-y-2">
               <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
                 <Terminal className="h-3.5 w-3.5 text-primary" />
-                <span>Environment Configuration Status</span>
+                <span>{t('cardTheme.envConfigStatus')}</span>
               </div>
               <div className="space-y-1.5 rounded-lg border border-border bg-background/50 p-3">
                 {operations.map((op) => (
@@ -286,10 +297,14 @@ const CardTheme = ({
                 <div className="space-y-1 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-xs text-foreground">
                   {failedOps.map((op) => (
                     <div key={op.name} className="space-y-0.5">
-                      <p className="font-semibold text-destructive">Operation: Failed to configure {op.name}</p>
-                      <p className="text-[11px] text-muted-foreground">Reason: {op.message}</p>
+                      <p className="font-semibold text-destructive">
+                        {t('cardTheme.operationFailed', { name: op.name })}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {t('cardTheme.reason', { message: op.message })}
+                      </p>
                       <p className="text-[11px] italic text-secondary-text">
-                        Recovery: Previous configuration intact / backup saved in ~/.config/pegasus/backups/
+                        {t('cardTheme.recovery')}
                       </p>
                     </div>
                   ))}
@@ -302,7 +317,7 @@ const CardTheme = ({
           <div className="space-y-1.5">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
               <Palette className="h-3.5 w-3.5 text-primary" />
-              <span>Color Palette</span>
+              <span>{t('cardTheme.colorPalette')}</span>
             </div>
             <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-5">
               {normalizedPalette.map((item) => (
@@ -311,11 +326,13 @@ const CardTheme = ({
                   className="flex flex-col justify-between gap-2 rounded-lg border border-border bg-background/50 p-2.5 transition-colors hover:border-primary/30"
                 >
                   <div className="flex items-center justify-between gap-1">
-                    <span className="truncate text-[11px] font-medium text-muted-foreground">{item.label}</span>
+                    <span className="truncate text-[11px] font-medium text-muted-foreground">
+                      {getSwatchLabel(item.label)}
+                    </span>
                     <div
                       className="h-4 w-4 shrink-0 rounded-full border border-white/10 shadow-xs"
                       style={{ backgroundColor: item.color }}
-                      title={`${item.label}: ${item.color}`}
+                      title={`${getSwatchLabel(item.label)}: ${item.color}`}
                     />
                   </div>
                   <span className="text-[11px] font-mono font-medium text-foreground">{item.color}</span>
@@ -327,13 +344,13 @@ const CardTheme = ({
           {/* 4. Wallpaper Section */}
           <div className="space-y-1.5">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-              <span>Wallpaper</span>
+              <span>{t('cardTheme.wallpaper')}</span>
             </div>
             <div className="space-y-2 rounded-lg border border-border bg-background/50 p-3">
               {hasValidImage ? (
                 <img
                   src={normalizedWallpaper.previewUrl}
-                  alt={`${normalizedWallpaper.name} preview`}
+                  alt={t('cardTheme.previewAlt', { name: normalizedWallpaper.name })}
                   onError={() => setImgFailed(true)}
                   className="h-32 w-full rounded-md border border-border object-cover"
                 />
@@ -348,7 +365,7 @@ const CardTheme = ({
                 >
                   <div className="flex items-center justify-between">
                     <Badge variant="secondary" className="bg-background/80 text-[10px] backdrop-blur-xs">
-                      Theme Canvas
+                      {t('cardTheme.themeCanvas')}
                     </Badge>
                     {normalizedWallpaper.resolution && (
                       <span className="text-[10px] font-mono text-foreground/80">{normalizedWallpaper.resolution}</span>

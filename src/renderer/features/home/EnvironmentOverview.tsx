@@ -1,17 +1,20 @@
 import { Cpu, HardDrive, Shield, Terminal } from 'lucide-react'
+import { useTranslation } from '@/context/LanguageContext'
 
 export function EnvironmentOverview() {
+  const { t } = useTranslation()
+
   const specs = [
-    { label: 'OS', value: 'Fedora 44', icon: HardDrive },
-    { label: 'Desktop', value: 'GNOME', icon: Cpu },
-    { label: 'Display Server', value: 'Wayland', icon: Terminal },
-    { label: 'Pegasus', value: '1.0.0', icon: Shield },
+    { label: t('environment.os'), value: 'Fedora 44', icon: HardDrive },
+    { label: t('environment.desktop'), value: 'GNOME', icon: Cpu },
+    { label: t('environment.displayServer'), value: 'Wayland', icon: Terminal },
+    { label: t('environment.pegasus'), value: '1.0.0', icon: Shield },
   ]
 
   return (
     <section className="space-y-1.5">
       <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-        Environment
+        {t('environment.title')}
       </h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         {specs.map((spec) => {

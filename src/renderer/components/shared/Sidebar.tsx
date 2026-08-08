@@ -1,32 +1,38 @@
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { Home as HomeIcon, Palette, ChessKnight } from 'lucide-react'
+import { Home as HomeIcon, Palette, Settings as SettingsIcon, ChessKnight } from 'lucide-react'
+import { useTranslation } from '@/context/LanguageContext'
 
-export type ActiveNav = 'home' | 'themes'
+export type ActiveNav = 'home' | 'themes' | 'settings'
+
 interface SidebarProps {
   activeNav: ActiveNav
   onSelectNav: (nav: ActiveNav) => void
 }
 
 export function Sidebar({ activeNav, onSelectNav }: SidebarProps) {
+  const { t } = useTranslation()
+
   const navItems = [
-    { id: 'home' as const, label: 'Home', icon: HomeIcon },
-    { id: 'themes' as const, label: 'Themes', icon: Palette },
+    { id: 'home' as const, label: t('nav.home'), icon: HomeIcon },
+    { id: 'themes' as const, label: t('nav.themes'), icon: Palette },
+    { id: 'settings' as const, label: t('nav.settings'), icon: SettingsIcon },
   ]
 
   return (
     <aside className="w-52 border-r border-border bg-surface flex flex-col justify-between p-3 select-none shrink-0">
       <div className="space-y-4">
-
         <div className="flex items-center gap-2.5 px-2 py-1">
           <div className="h-6 w-6 rounded bg-primary text-primary-foreground flex items-center justify-center font-bold text-xs">
             <ChessKnight className="h-3.5 w-3.5 text-primary-foreground" />
           </div>
           <div>
             <h1 className="font-semibold text-xs leading-none text-foreground tracking-tight">
-              Pegasus
+              {t('sidebar.appName')}
             </h1>
-            <p className="text-[10px] text-muted-foreground mt-0.5 font-normal">Engine Theme</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5 font-normal">
+              {t('sidebar.appSubtitle')}
+            </p>
           </div>
         </div>
 

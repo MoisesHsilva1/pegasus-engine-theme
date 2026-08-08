@@ -4,8 +4,10 @@ import { CardTheme } from '@/components/ui/cardTheme'
 import { Badge } from '@/components/ui/badge'
 import { themes } from './data/themes'
 import type { ThemeOperationResult } from '@shared/types'
+import { useTranslation, type TranslationKey } from '@/context/LanguageContext'
 
 export function ThemesView() {
+  const { t } = useTranslation()
   const [appliedThemeId, setAppliedThemeId] = React.useState<string>('matte-black')
   const [applyingThemeId, setApplyingThemeId] = React.useState<string | null>(null)
   const [operationsMap, setOperationsMap] = React.useState<Record<string, ThemeOperationResult[]>>({})
@@ -43,41 +45,45 @@ export function ThemesView() {
   return (
     <div className="max-w-4xl space-y-5 pb-6">
       <PageHeader
-        title="System Themes"
-        description="Fedora GNOME theme profiles and desktop accent management."
+        title={t('header.themesTitle')}
+        description={t('header.themesDesc')}
       />
 
       {/* Active Theme & System Overview Bar */}
       <div className="rounded-lg border border-border bg-card/60 backdrop-blur-xs p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2.5">
           <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
-          <span className="text-muted-foreground">Active Profile:</span>
+          <span className="text-muted-foreground">{t('themes.activeProfile')}</span>
           <span className="font-semibold text-foreground">{activeTheme?.name || 'Matte Black'}</span>
           <Badge variant="secondary" className="font-mono text-[10px] py-0 px-2">
             {appliedThemeId}
           </Badge>
         </div>
         <div className="flex items-center gap-4 text-muted-foreground font-mono text-[11px]">
-          <span>{themes.length} Available Themes</span>
+          <span>{t('themes.availableThemes', { count: themes.length })}</span>
           <span className="hidden sm:inline">•</span>
-          <span className="hidden sm:inline">Instant Previews Enabled</span>
+          <span className="hidden sm:inline">{t('themes.instantPreviews')}</span>
         </div>
       </div>
 
-      {themes.map((theme) => (
-        <CardTheme
-          key={theme.name}
-          name={theme.name}
-          description={theme.description}
-          palette={theme.palette}
-          wallpaper={theme.wallpaper}
-          isApplied={appliedThemeId === theme.id}
-          isApplying={applyingThemeId === theme.id}
-          isApplyingAny={applyingThemeId !== null}
-          operations={operationsMap[theme.id]}
-          onApply={() => handleApplyTheme(theme.id)}
-        />
-      ))}
+      {themes.map((theme) => {
+        const descriptionKey = `themeDescriptions.${theme.id}` as TranslationKey
+        const translatedDescription = t(descriptionKey) || theme.description
+        return (
+          <CardTheme
+            key={theme.name}
+            name={theme.name}
+            description={translatedDescription}
+            palette={theme.palette}
+            wallpaper={theme.wallpaper}
+            isApplied={appliedThemeId === theme.id}
+            isApplying={applyingThemeId === theme.id}
+            isApplyingAny={applyingThemeId !== null}
+            operations={operationsMap[theme.id]}
+            onApply={() => handleApplyTheme(theme.id)}
+          />
+        )
+      })}
     </div>
   )
 }

@@ -2,6 +2,7 @@ import type { AppSettings } from '@shared/types'
 
 export class SettingsService {
   private settings: AppSettings = {
+    language: 'en',
     darkMode: true,
     autoApplyTheme: false,
     notificationsEnabled: true,
