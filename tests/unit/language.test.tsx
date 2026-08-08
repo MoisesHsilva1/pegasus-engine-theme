@@ -22,7 +22,7 @@ describe('Internationalization (i18n) — Brazilian Portuguese (pt-BR) Support',
     // Mock pegasus window object for settings IPC
     window.pegasus = {
       system: { getInfo: vi.fn() },
-      themes: { list: vi.fn(), getActive: vi.fn(), apply: vi.fn() },
+      themes: { list: vi.fn(), apply: vi.fn() },
       terminal: { getConfig: vi.fn() },
       packages: { list: vi.fn() },
       settings: {

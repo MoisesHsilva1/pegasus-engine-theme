@@ -11,18 +11,6 @@ export async function handleListThemes(engine: PegasusEngine): Promise<IpcResult
   }
 }
 
-export async function handleGetActiveTheme(
-  engine: PegasusEngine
-): Promise<IpcResult<ThemeProfile | null>> {
-  try {
-    const active = await engine.themes.getActiveTheme()
-    return { success: true, data: active }
-  } catch (err) {
-    const error = err instanceof Error ? err.message : String(err)
-    return { success: false, error }
-  }
-}
-
 export async function handleApplyTheme(
   engine: PegasusEngine,
   themeId: unknown

@@ -2,7 +2,7 @@ import { CardThemeProps } from '@/components/ui/cardTheme'
 import { THEME_MANIFESTS } from '../../../../themes'
 import type { ThemeProfile } from '@shared/types'
 
-export interface ThemeDefinition extends Omit<CardThemeProps, 'isApplied' | 'onApply'> {
+export interface ThemeDefinition extends Omit<CardThemeProps, 'onApply'> {
   id: string
 }
 
