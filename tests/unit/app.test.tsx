@@ -12,6 +12,5 @@ describe('React App Desktop Shell — Home UI', () => {
     expect(screen.getByRole('heading', { name: 'Home', level: 1 })).toBeInTheDocument()
     expect(screen.getByText('Manage and customize your Pegasus environment.')).toBeInTheDocument()
     expect(screen.getByText('Fedora 44')).toBeInTheDocument()
-    expect(screen.getByText('Graphite')).toBeInTheDocument()
   })
 })

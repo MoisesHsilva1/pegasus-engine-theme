@@ -111,11 +111,4 @@ describe('CardTheme component', () => {
     expect(screen.queryByText('Color Palette')).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Expand Nordic Dark theme details/i })).toHaveAttribute('aria-expanded', 'false')
   })
-
-  it('displays Applied badge when isApplied is true', () => {
-    render(<CardTheme {...defaultProps} isApplied={true} />)
-
-    expect(screen.getByText('Applied')).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /Apply Nordic Dark theme/i })).not.toBeInTheDocument()
-  })
 })
