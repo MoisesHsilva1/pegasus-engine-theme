@@ -1,12 +1,12 @@
-# Pegasus Theme
+# Pegasus Engine Theme
 
-**Pegasus Theme** is a native Fedora-focused Linux desktop application that provides a graphical management interface for the Pegasus environment (themes, terminal profiles, icons, fonts, wallpapers, configurations, and packages).
+**Pegasus Engine Theme** is a native Fedora-focused Linux desktop application that provides a graphical management interface for the Pegasus Engine Theme environment (themes, terminal profiles, icons, fonts, wallpapers, configurations, and packages).
 
 ---
 
 ## 1. Core Architecture
 
-Pegasus Theme strictly enforces process separation and security boundaries between the user interface and system privilege operations.
+Pegasus Engine Theme strictly enforces process separation and security boundaries between the user interface and system privilege operations.
 
 ```text
 ┌─────────────────────────────┐
@@ -124,7 +124,7 @@ Built packages will be output to `release/` (including `.rpm` packages for Fedor
 ## 5. Architectural Directory Layout
 
 ```text
-pegasus-engineer/
+pegasus-engine-theme/
 ├── src/
 │   ├── main/           # Privileged Electron main process
 │   │   ├── engine/     # Pegasus Engine services (Themes, System, Terminal, Packages)

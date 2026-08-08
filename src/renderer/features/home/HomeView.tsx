@@ -23,7 +23,7 @@ export function HomeView({ onNavigate }: HomeViewProps) {
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold shadow-xs">
                 <ChessKnight className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold tracking-tight text-foreground">Pegasus</span>
+              <span className="text-xl font-bold tracking-tight text-foreground">Pegasus Engine Theme</span>
               <Badge variant="outline" className="font-mono text-[10px] border-primary/40 text-primary bg-primary/10">
                 v1.0.0
               </Badge>

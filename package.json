@@ -1,10 +1,10 @@
 {
-  "name": "pegasus-engineer",
+  "name": "pegasus-engine-theme",
   "version": "0.1.0",
-  "description": "Fedora-focused desktop application for managing the Pegasus environment",
+  "description": "Fedora-focused desktop application for managing the Pegasus Engine Theme environment",
   "main": "dist-electron/main/index.js",
   "type": "module",
-  "author": "Pegasus Team",
+  "author": "Pegasus Engine Theme Team",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -54,8 +54,8 @@
     "vitest": "^3.0.5"
   },
   "build": {
-    "appId": "com.pegasus.engineer",
-    "productName": "Pegasus Theme",
+    "appId": "com.pegasus.engine.theme",
+    "productName": "Pegasus Engine Theme",
     "directories": {
       "output": "release"
     },

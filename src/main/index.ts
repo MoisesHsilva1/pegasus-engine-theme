@@ -22,7 +22,7 @@ function createWindow(): void {
     height: 800,
     minWidth: 900,
     minHeight: 600,
-    title: 'Pegasus Theme',
+    title: 'Pegasus Engine Theme',
     backgroundColor: '#090d16',
     show: false,
     webPreferences: {

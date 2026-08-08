@@ -1,6 +1,6 @@
 # GEMINI.md — Engineering Principles & AI Agent Rules
 
-This document defines the strict engineering guidelines for AI agents working on the **Pegasus Theme** codebase.
+This document defines the strict engineering guidelines for AI agents working on the **Pegasus Engine Theme** codebase.
 
 ---
 

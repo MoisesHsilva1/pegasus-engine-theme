@@ -26,7 +26,7 @@ export function Sidebar({ activeNav, onSelectNav }: SidebarProps) {
             <h1 className="font-semibold text-xs leading-none text-foreground tracking-tight">
               Pegasus
             </h1>
-            <p className="text-[10px] text-muted-foreground mt-0.5 font-normal">Theme</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5 font-normal">Engine Theme</p>
           </div>
         </div>
 
