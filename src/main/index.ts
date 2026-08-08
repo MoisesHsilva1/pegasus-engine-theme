@@ -1,7 +1,10 @@
 import { app, BrowserWindow, nativeTheme, Menu, protocol } from 'electron'
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import fs from 'node:fs'
+import path from 'node:path'
+import os from 'node:os'
+import { fileURLToPath } from 'node:url'
+import { ThemePathResolver } from './engine/themes/resolver'
+import { ThemeConfigManager } from './engine/themes/config'
 import { PegasusEngine } from './engine'
 import { registerIpcHandlers } from './ipc'
 
@@ -68,11 +71,57 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  // Helper to validate and prevent path traversal vulnerabilities
+  async function validateSafePath(filePath: string): Promise<boolean> {
+    try {
+      const resolvedPath = path.resolve(filePath)
+
+      const allowedDirs = [
+        ThemePathResolver.getUserThemesDir(),
+        path.join(os.homedir(), '.local', 'share', 'pegasus', 'wallpapers'),
+      ]
+
+      const bundledDir = ThemePathResolver.getBundledThemesDir()
+      if (bundledDir) {
+        allowedDirs.push(bundledDir)
+      }
+
+      // Check if there is an active external theme path
+      try {
+        const configManager = new ThemeConfigManager()
+        const config = await configManager.loadConfig()
+        if (config && config.source === 'external' && config.path) {
+          allowedDirs.push(config.path)
+        }
+      } catch {
+        // Non-fatal if config manager fails
+      }
+
+      for (const dir of allowedDirs) {
+        const resolvedDir = path.resolve(dir)
+        const relative = path.relative(resolvedDir, resolvedPath)
+        const isInside = !relative.startsWith('..') && !path.isAbsolute(relative)
+        if (isInside) {
+          return true
+        }
+      }
+    } catch {
+      return false
+    }
+    return false
+  }
+
   // Handle pegasus-asset:// protocol requests for dynamic wallpaper previews
-  protocol.handle('pegasus-asset', (request) => {
+  protocol.handle('pegasus-asset', async (request) => {
     try {
       const url = new URL(request.url)
       const filePath = decodeURIComponent(url.pathname)
+
+      const isSafe = await validateSafePath(filePath)
+      if (!isSafe) {
+        return new Response('Access Denied', { status: 403 })
+      }
+
       if (!fs.existsSync(filePath)) {
         return new Response('Asset not found', { status: 404 })
       }
