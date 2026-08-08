@@ -1,12 +1,26 @@
-import { app, BrowserWindow, nativeTheme, Menu } from 'electron'
+import { app, BrowserWindow, nativeTheme, Menu, protocol, net } from 'electron'
 import fs from 'fs'
 import path from 'path'
-import { fileURLToPath } from 'url'
+import { fileURLToPath, pathToFileURL } from 'url'
 import { PegasusEngine } from './engine'
 import { registerIpcHandlers } from './ipc'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'pegasus-asset',
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      corsEnabled: true,
+      stream: true,
+      bypassCSP: true,
+    },
+  },
+])
 
 let mainWindow: BrowserWindow | null = null
 
@@ -54,6 +68,20 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  // Handle pegasus-asset:// protocol requests for dynamic wallpaper previews
+  protocol.handle('pegasus-asset', (request) => {
+    try {
+      const url = new URL(request.url)
+      const filePath = decodeURIComponent(url.pathname)
+      if (!fs.existsSync(filePath)) {
+        return new Response('Asset not found', { status: 404 })
+      }
+      return net.fetch(pathToFileURL(filePath).toString())
+    } catch (err) {
+      return new Response(`Error loading asset: ${String(err)}`, { status: 500 })
+    }
+  })
+
   // Disable default Electron application menu bar (File, Edit, View, Window, Help)
   Menu.setApplicationMenu(null)
 
@@ -74,3 +102,4 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
+

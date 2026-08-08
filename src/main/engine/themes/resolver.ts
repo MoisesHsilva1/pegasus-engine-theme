@@ -3,6 +3,8 @@ import os from 'os'
 import path from 'path'
 import { THEME_MANIFESTS, type ThemeId } from '../../../themes'
 
+import { app as electronApp } from 'electron'
+
 export interface ThemeResolutionResult {
   themeId: ThemeId
   themeDir: string
@@ -15,11 +17,8 @@ export class ThemePathResolver {
    */
   private static getElectronApp(): { getAppPath(): string; isPackaged: boolean } | undefined {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const electron = require('electron')
-      const app = electron.app || electron.default?.app
-      if (app && typeof app.getAppPath === 'function') {
-        return app as { getAppPath(): string; isPackaged: boolean }
+      if (electronApp && typeof electronApp.getAppPath === 'function') {
+        return electronApp as { getAppPath(): string; isPackaged: boolean }
       }
       return undefined
     } catch {

@@ -144,9 +144,20 @@ ThemeService.applyTheme(themeId)        [Main Process]
        ↓
 ThemePathResolver.resolveThemeDir(themeId)
        ↓
-Resolved theme directory (bundled / user / external)
+WallpaperService.resolveWallpaper(themeDir)
+  - Checks themeDir/wallpaper/ (supported formats: .jpg, .jpeg, .png, .webp)
+  - Checks themeDir root
+  - Falls back to bundled resources (/opt/pegasus-engine-theme/resources/themes/)
        ↓
-Apply: GNOME gsettings, Alacritty config, Zellij config, Wallpaper
+Wallpaper version computed from filesystem stat (mtimeMs + size)
+       ↓
+Preview: Served via pegasus-asset://${filePath}?v=${version} custom protocol handler
+       ↓
+Wallpaper copied to ~/.local/share/pegasus/wallpapers/{themeId}-{version}{ext}
+       ↓
+GNOME gsettings picture-uri & picture-uri-dark set to file://... (versioned URI forces GNOME texture cache reload)
+       ↓
+Apply: GNOME gsettings accent color, Alacritty config, Zellij config
        ↓
 ThemeConfigManager.saveConfig({ themeId, source, path: null })
        ↓
@@ -154,7 +165,7 @@ ThemeConfigManager.saveConfig({ themeId, source, path: null })
 ```
 
 On application restart, `ThemeService.ensureInitialized()` calls `ThemeConfigManager.loadConfig()`
-which reads the persisted `themeId` and re-resolves the active theme.
+which reads the persisted `themeId` and re-resolves the active theme and current wallpaper dynamically from disk.
 
 ---
 
