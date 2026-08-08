@@ -1,6 +1,3 @@
-# ────────────────────────────────────────────────────────────
-# Matte Black Monochrome Theme for Alacritty
-# ────────────────────────────────────────────────────────────
 
 [window]
 decorations = "None"
@@ -39,47 +36,78 @@ bindings = [
   { mouse = "WheelDown", mods = "Control", action = "None" },
 ]
 
-
-[colors]
-
 [colors.primary]
-background = "#101010"
-foreground = "#C8C8C8"
-dim_foreground = "#808080"
-
+background = "#24273a"
+foreground = "#cad3f5"
+dim_foreground = "#8087a2"
+bright_foreground = "#cad3f5"
 
 [colors.cursor]
-text = "#101010"
-cursor = "#EAEAEA"
-
+text = "#24273a"
+cursor = "#f4dbd6"
 
 [colors.vi_mode_cursor]
-text = "#101010"
-cursor = "#EAEAEA"
+text = "#24273a"
+cursor = "#b7bdf8"
 
+[colors.search.matches]
+foreground = "#24273a"
+background = "#a5adcb"
+
+[colors.search.focused_match]
+foreground = "#24273a"
+background = "#a6da95"
+
+[colors.footer_bar]
+foreground = "#24273a"
+background = "#a5adcb"
+
+[colors.hints.start]
+foreground = "#24273a"
+background = "#eed49f"
+
+[colors.hints.end]
+foreground = "#24273a"
+background = "#a5adcb"
 
 [colors.selection]
-text = "CellForeground"
-background = "#303030"
-
+text = "#24273a"
+background = "#f4dbd6"
 
 [colors.normal]
-black = "#1A1A1A"
-red = "#888888"
-green = "#A0A0A0"
-yellow = "#B0B0B0"
-blue = "#909090"
-magenta = "#A8A8A8"
-cyan = "#B8B8B8"
-white = "#D8D8D8"
-
+black = "#494d64"
+red = "#ed8796"
+green = "#a6da95"
+yellow = "#eed49f"
+blue = "#8aadf4"
+magenta = "#f5bde6"
+cyan = "#8bd5ca"
+white = "#b8c0e0"
 
 [colors.bright]
-black = "#505050"
-red = "#A0A0A0"
-green = "#B8B8B8"
-yellow = "#C0C0C0"
-blue = "#A8A8A8"
-magenta = "#B0B0B0"
-cyan = "#D0D0D0"
-white = "#FFFFFF"
+black = "#5b6078"
+red = "#ed8796"
+green = "#a6da95"
+yellow = "#eed49f"
+blue = "#8aadf4"
+magenta = "#f5bde6"
+cyan = "#8bd5ca"
+white = "#a5adcb"
+
+[colors.dim]
+black = "#494d64"
+red = "#ed8796"
+green = "#a6da95"
+yellow = "#eed49f"
+blue = "#8aadf4"
+magenta = "#f5bde6"
+cyan = "#8bd5ca"
+white = "#b8c0e0"
+
+[[colors.indexed_colors]]
+index = 16
+color = "#f5a97f"
+
+[[colors.indexed_colors]]
+index = 17
+color = "#f4dbd6"

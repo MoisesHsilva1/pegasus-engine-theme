@@ -20,6 +20,18 @@ export interface SystemInfo {
 }
 
 /**
+ * Wallpaper metadata DTO
+ */
+export interface WallpaperInfo {
+  file: string
+  resolution?: string
+  previewUrl?: string
+  version?: string
+  hasAsset: boolean
+  filePath?: string
+}
+
+/**
  * Theme information placeholder DTO
  */
 export interface ThemeProfile {
@@ -28,6 +40,17 @@ export interface ThemeProfile {
   description: string
   active: boolean
   accentColor: string
+  tokens?: {
+    background: string
+    foreground: string
+    primary: string
+    accent: string
+    border: string
+    surface?: string
+    card?: string
+    muted?: string
+  }
+  wallpaper?: WallpaperInfo
 }
 
 /**

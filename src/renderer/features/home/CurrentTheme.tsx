@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Palette, CheckCircle2, ArrowRight } from 'lucide-react'
-import { themes } from '../themes/data/themes'
+import { themes as staticThemes, profileToThemeDefinition, type ThemeDefinition } from '../themes/data/themes'
 import type { ColorSwatch, WallpaperDetails } from '@/components/ui/cardTheme'
 import type { ActiveNav } from '@/components/shared/Sidebar'
 import { useTranslation, type TranslationKey } from '@/context/LanguageContext'
@@ -54,16 +54,39 @@ function normalizeWallpaper(rawWallpaper?: string | WallpaperDetails): Wallpaper
 export function CurrentTheme({ onNavigate }: CurrentThemeProps) {
   const { t } = useTranslation()
   const [activeThemeId, setActiveThemeId] = React.useState<string>('matte-black')
+  const [activeThemeDef, setActiveThemeDef] = React.useState<ThemeDefinition | null>(null)
   const [imgFailed, setImgFailed] = React.useState(false)
 
   React.useEffect(() => {
-    const currentThemeAttr = document.documentElement.getAttribute('data-theme')
-    if (currentThemeAttr) {
-      setActiveThemeId(currentThemeAttr)
+    let isMounted = true
+
+    const loadActiveTheme = async () => {
+      const currentThemeAttr = document.documentElement.getAttribute('data-theme')
+      if (currentThemeAttr) {
+        setActiveThemeId(currentThemeAttr)
+      }
+
+      if (typeof window !== 'undefined' && window.pegasus?.themes?.getActive) {
+        try {
+          const res = await window.pegasus.themes.getActive()
+          if (isMounted && res.success && res.data) {
+            setActiveThemeId(res.data.id)
+            const fallback = staticThemes.find((st) => st.id === res.data!.id)
+            setActiveThemeDef(profileToThemeDefinition(res.data, fallback))
+          }
+        } catch {
+          // Fallback
+        }
+      }
+    }
+
+    loadActiveTheme()
+    return () => {
+      isMounted = false
     }
   }, [])
 
-  const activeTheme = themes.find((t) => t.id === activeThemeId) || themes[0]
+  const activeTheme = activeThemeDef || staticThemes.find((t) => t.id === activeThemeId) || staticThemes[0]
   const activeName = activeTheme?.name || 'Matte Black'
   const activeDescriptionKey = `themeDescriptions.${activeTheme?.id}` as TranslationKey
   const activeDescription = t(activeDescriptionKey) || activeTheme?.description

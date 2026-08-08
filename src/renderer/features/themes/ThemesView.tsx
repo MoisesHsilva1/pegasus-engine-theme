@@ -2,7 +2,7 @@ import * as React from 'react'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { CardTheme } from '@/components/ui/cardTheme'
 import { Badge } from '@/components/ui/badge'
-import { themes } from './data/themes'
+import { themes as staticThemes, profileToThemeDefinition, type ThemeDefinition } from './data/themes'
 import type { ThemeOperationResult } from '@shared/types'
 import { useTranslation, type TranslationKey } from '@/context/LanguageContext'
 
@@ -11,6 +11,38 @@ export function ThemesView() {
   const [appliedThemeId, setAppliedThemeId] = React.useState<string>('matte-black')
   const [applyingThemeId, setApplyingThemeId] = React.useState<string | null>(null)
   const [operationsMap, setOperationsMap] = React.useState<Record<string, ThemeOperationResult[]>>({})
+  const [themeList, setThemeList] = React.useState<ThemeDefinition[]>(staticThemes)
+
+  const loadThemes = React.useCallback(async () => {
+    if (typeof window !== 'undefined' && window.pegasus?.themes?.list) {
+      try {
+        const res = await window.pegasus.themes.list()
+        if (res.success && res.data && res.data.length > 0) {
+          const mapped = res.data.map((profile) => {
+            const fallback = staticThemes.find((st) => st.id === profile.id)
+            return profileToThemeDefinition(profile, fallback)
+          })
+          setThemeList(mapped)
+        }
+      } catch {
+        // Fall back to static themes on IPC failure
+      }
+    }
+    if (typeof window !== 'undefined' && window.pegasus?.themes?.getActive) {
+      try {
+        const activeRes = await window.pegasus.themes.getActive()
+        if (activeRes.success && activeRes.data) {
+          setAppliedThemeId(activeRes.data.id)
+        }
+      } catch {
+        // Fall back
+      }
+    }
+  }, [])
+
+  React.useEffect(() => {
+    loadThemes()
+  }, [loadThemes])
 
   const handleApplyTheme = async (themeId: string) => {
     if (applyingThemeId) return // Prevent double click or parallel execution
@@ -28,6 +60,7 @@ export function ThemesView() {
         }
         if (res.success || (res.data && res.data.status !== 'FAILED')) {
           setAppliedThemeId(themeId)
+          await loadThemes()
         }
       } else {
         // Fallback for non-electron environment preview
@@ -40,7 +73,7 @@ export function ThemesView() {
     }
   }
 
-  const activeTheme = themes.find((t) => t.id === appliedThemeId) || themes[0]
+  const activeTheme = themeList.find((t) => t.id === appliedThemeId) || themeList[0]
 
   return (
     <div className="max-w-4xl space-y-5 pb-6">
@@ -60,18 +93,18 @@ export function ThemesView() {
           </Badge>
         </div>
         <div className="flex items-center gap-4 text-muted-foreground font-mono text-[11px]">
-          <span>{t('themes.availableThemes', { count: themes.length })}</span>
+          <span>{t('themes.availableThemes', { count: themeList.length })}</span>
           <span className="hidden sm:inline">•</span>
           <span className="hidden sm:inline">{t('themes.instantPreviews')}</span>
         </div>
       </div>
 
-      {themes.map((theme) => {
+      {themeList.map((theme) => {
         const descriptionKey = `themeDescriptions.${theme.id}` as TranslationKey
         const translatedDescription = t(descriptionKey) || theme.description
         return (
           <CardTheme
-            key={theme.name}
+            key={theme.id || theme.name}
             name={theme.name}
             description={translatedDescription}
             palette={theme.palette}
@@ -87,3 +120,4 @@ export function ThemesView() {
     </div>
   )
 }
+

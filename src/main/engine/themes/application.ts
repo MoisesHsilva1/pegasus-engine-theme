@@ -5,6 +5,8 @@ import os from 'os'
 import type { ThemeApplyResult, ThemeOperationResult } from '@shared/types'
 import { THEME_MANIFESTS, type ThemeId } from '../../../themes'
 import { WallpaperService } from './wallpaper'
+import { ThemePathResolver } from './resolver'
+import { ThemeConfigManager } from './config'
 
 export class ThemeApplicationService {
   private wallpaperService = new WallpaperService()
@@ -21,26 +23,13 @@ export class ThemeApplicationService {
     return path.join(this.getPegasusConfigDir(), 'backups')
   }
 
-  public getThemesDir(): string {
-    const baseDir = typeof __dirname !== 'undefined' ? __dirname : process.cwd()
-    const candidatePaths = [
-      path.resolve(baseDir, '../../../src/themes'),
-      path.resolve(baseDir, '../../src/themes'),
-      path.resolve(baseDir, '../src/themes'),
-      path.resolve(process.cwd(), 'src/themes'),
-      path.resolve(process.cwd(), 'resources/themes'),
-    ]
-
-    for (const p of candidatePaths) {
-      if (existsSync(p)) {
-        return p
-      }
-    }
-    return path.resolve(process.cwd(), 'src/themes')
-  }
-
+  /**
+   * Returns the resolved themes root directory for GNOME script PEGASUS_PATH env.
+   * Falls back to process.cwd() only in development (non-packaged) builds.
+   */
   private getPegasusPath(): string {
-    return path.dirname(this.getThemesDir())
+    const bundledDir = ThemePathResolver.getBundledThemesDir()
+    return bundledDir ? path.dirname(bundledDir) : process.cwd()
   }
 
   /**
@@ -52,7 +41,7 @@ export class ThemeApplicationService {
     }
 
     const sanitized = path.basename(themeId) as ThemeId
-    if (sanitized !== themeId || !(sanitized in THEME_MANIFESTS)) {
+    if (sanitized !== themeId || !ThemePathResolver.isValidThemeId(sanitized)) {
       throw new Error(`Theme '${themeId}' does not exist or is invalid. Path traversal blocked.`)
     }
 
@@ -156,9 +145,9 @@ export class ThemeApplicationService {
       // 1. Validation & Resolution
       const themeId = this.validateTheme(rawThemeId)
       const manifest = THEME_MANIFESTS[themeId]
-      const themeDir = path.join(this.getThemesDir(), themeId)
+      const resolution = ThemePathResolver.resolveThemeDir(themeId)
 
-      if (!existsSync(themeDir)) {
+      if (!resolution || !existsSync(resolution.themeDir)) {
         return {
           status: 'FAILED',
           themeId: rawThemeId,
@@ -166,17 +155,19 @@ export class ThemeApplicationService {
             {
               name: 'Theme Validation',
               status: 'FAILED',
-              message: `Theme folder '${themeDir}' not found.`,
+              message: `The selected theme "${manifest?.name || themeId}" could not be found in application resources or user theme directory. Your previous configuration has been preserved.`,
             },
           ],
-          error: `Theme folder for '${themeId}' not found.`,
+          error: `Theme "${manifest?.name || themeId}" not found.`,
         }
       }
+
+      const themeDir = resolution.themeDir
 
       operations.push({
         name: 'Theme Resolution',
         status: 'SUCCESS',
-        message: `Validated theme '${manifest.name}' assets directory.`,
+        message: `Validated theme "${manifest.name}" assets (source: ${resolution.source}).`,
       })
 
       // 2. Backup Creation
@@ -290,6 +281,15 @@ export class ThemeApplicationService {
         }
       } else if (hasWarnings) {
         status = 'PARTIAL_SUCCESS'
+      }
+
+      if (status !== 'FAILED') {
+        const configManager = new ThemeConfigManager()
+        await configManager.saveConfig({
+          themeId,
+          source: resolution.source,
+          path: resolution.source === 'external' ? resolution.themeDir : null,
+        })
       }
 
       return {
