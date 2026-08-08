@@ -164,8 +164,7 @@ export class WallpaperService {
     }
 
     try {
-      const stat = statSync(filePath)
-      const version = `${Math.floor(stat.mtimeMs)}-${stat.size}`
+      const version = await this.computeWallpaperHash(filePath)
       const previewUrl = `pegasus-asset://${filePath}?v=${version}`
 
       return {
@@ -215,8 +214,7 @@ export class WallpaperService {
     const wallpapersDir = this.getWallpapersDir()
     await fs.mkdir(wallpapersDir, { recursive: true })
 
-    const statSrc = await fs.stat(srcPath)
-    const version = `${Math.floor(statSrc.mtimeMs)}-${statSrc.size}`
+    const version = await this.computeWallpaperHash(srcPath)
     const ext = path.extname(srcPath).toLowerCase()
     const targetFileName = `${themeId}-${version}${ext}`
     const targetPath = path.join(wallpapersDir, targetFileName)
