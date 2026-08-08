@@ -2,14 +2,13 @@ import { ipcMain } from 'electron'
 import { IpcChannels } from '@shared/ipc'
 import type { PegasusEngine } from '@main/engine'
 import { handleGetSystemInfo } from './handlers/system'
-import { handleApplyTheme, handleGetActiveTheme, handleListThemes } from './handlers/themes'
+import { handleApplyTheme, handleListThemes } from './handlers/themes'
 import { handleGetSettings, handleUpdateSettings } from './handlers/settings'
 
 export function registerIpcHandlers(engine: PegasusEngine): void {
   ipcMain.handle(IpcChannels.SYSTEM_GET_INFO, () => handleGetSystemInfo(engine))
 
   ipcMain.handle(IpcChannels.THEMES_LIST, () => handleListThemes(engine))
-  ipcMain.handle(IpcChannels.THEMES_GET_ACTIVE, () => handleGetActiveTheme(engine))
   ipcMain.handle(IpcChannels.THEMES_APPLY, (_, themeId: unknown) =>
     handleApplyTheme(engine, themeId)
   )

@@ -151,8 +151,9 @@ describe('Theme Path Resolution & Configuration Architecture', () => {
     fs.writeFileSync(configFile, JSON.stringify(legacyPayload), 'utf-8')
 
     const service = new ThemeService()
-    const active = await service.getActiveTheme()
-    expect(active?.id).toBe('gruvbox')
+    const list = await service.listThemes()
+    const gruvboxTheme = list.find((t) => t.id === 'gruvbox')
+    expect(gruvboxTheme?.active).toBe(true)
   })
 
   it('8. Production Guard: getBundledThemesCandidates() only includes non-dev paths when packaged', () => {
