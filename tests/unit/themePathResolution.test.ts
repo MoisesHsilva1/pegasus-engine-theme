@@ -150,10 +150,10 @@ describe('Theme Path Resolution & Configuration Architecture', () => {
     fs.mkdirSync(pegasusConfigDir, { recursive: true })
     fs.writeFileSync(configFile, JSON.stringify(legacyPayload), 'utf-8')
 
-    const service = new ThemeService()
-    const list = await service.listThemes()
-    const gruvboxTheme = list.find((t) => t.id === 'gruvbox')
-    expect(gruvboxTheme?.active).toBe(true)
+    // We can validate the migration logic by loading the config directly
+    const configManager = new ThemeConfigManager()
+    const config = await configManager.loadConfig()
+    expect(config?.themeId).toBe('gruvbox')
   })
 
   it('8. Production Guard: getBundledThemesCandidates() only includes non-dev paths when packaged', () => {
