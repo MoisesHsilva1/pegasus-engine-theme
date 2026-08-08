@@ -4,7 +4,7 @@
   "description": "Fedora-focused desktop application for managing the Pegasus Engine Theme environment",
   "main": "dist-electron/main/index.js",
   "type": "module",
-  "author": "Pegasus Engine Theme Team",
+  "author": "Pegasus Engine Theme Team <dev@pegasus-engine.local>",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -18,7 +18,10 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "package": "pnpm build && electron-builder --linux rpm"
+    "package": "pnpm build && electron-builder --linux AppImage && node scripts/build-rpm.js",
+    "package:linux": "pnpm build && electron-builder --linux AppImage && node scripts/build-rpm.js",
+    "package:rpm": "pnpm build && electron-builder --linux dir && node scripts/build-rpm.js",
+    "package:appimage": "pnpm build && electron-builder --linux AppImage"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
@@ -56,6 +59,7 @@
   "build": {
     "appId": "com.pegasus.engine.theme",
     "productName": "Pegasus Engine Theme",
+    "executableName": "pegasus-engine-theme",
     "directories": {
       "output": "release"
     },
@@ -65,10 +69,19 @@
     ],
     "linux": {
       "target": [
-        "rpm"
+        "AppImage"
       ],
       "category": "System",
-      "icon": "resources/icons/icon.png"
+      "icon": "resources/icons/icon.png",
+      "maintainer": "Pegasus Engine Theme Team <dev@pegasus-engine.local>",
+      "desktop": {
+        "Name": "Pegasus Engine Theme",
+        "Comment": "Fedora-focused desktop application for managing the Pegasus Engine Theme environment",
+        "Categories": "System;Settings;Utility;"
+      }
+    },
+    "appImage": {
+      "artifactName": "Pegasus-Engine-Theme-${version}.${ext}"
     }
   }
 }
