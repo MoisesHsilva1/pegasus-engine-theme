@@ -1,7 +1,7 @@
 # Pegasus Engine Theme
 
 <p align="center">
-  <a href="#english">English</a> | 
+  <a href="#english">English</a> |
   <a href="#português-pt-br">Português (PT-BR)</a>
 </p>
 
@@ -60,32 +60,6 @@ To completely uninstall the application and purge its local configurations:
 
 ---
 
-## Releasing and Versioning
-
-To ensure release packages and download files are correctly generated, the project follows strict Semantic Versioning.
-
-### Tag Name Standard
-Always prefix your tags with `v` followed by the version numbers (e.g. **`v0.1.0`**).
-> **Warning**: Never put the `v` at the end of the version (e.g., `0.1.0v`). Pushing tags with trailing `v` suffixes causes malformed source code archives (e.g., `0.1.0v.zip`) and breaks automated dependency resolution.
-
-### How to Release
-1. Update the version inside `package.json` (e.g., `"version": "0.1.0"`).
-2. Commit the package file:
-   ```bash
-   git add package.json
-   git commit -m "chore: release v0.1.0"
-   ```
-3. Create the git tag with the **correct prefix format**:
-   ```bash
-   git tag -a v0.1.0 -m "Release v0.1.0"
-   ```
-4. Push the branch and tag to the repository:
-   ```bash
-   git push origin main
-   git push origin v0.1.0
-   ```
-
----
 
 ## Developer & Architecture Information
 
@@ -237,33 +211,6 @@ Para desinstalar completamente o aplicativo e limpar as configurações locais:
 2. (Opcional) Remova as pastas de configuração e estado locais do usuário:
    ```bash
    rm -rf ~/.config/pegasus ~/.local/share/pegasus "~/.config/Pegasus Engine Theme"
-   ```
-
----
-
-## Processo de Publicação e Versionamento
-
-Para garantir que os pacotes de lançamento e os arquivos de código-fonte no GitHub sejam gerados corretamente, o projeto segue o padrão do Versionamento Semântico.
-
-### Padrão de Nome da Tag Git
-Sempre utilize o prefixo `v` seguido dos números da versão (exemplo: **`v0.1.0`**).
-> **Atenção**: Nunca coloque a letra `v` ao final da versão (exemplo: `0.1.0v`). Criar tags com o sufixo `v` causa erros na nomenclatura dos pacotes gerados pelo GitHub (exemplo: `0.1.0v.zip`) e impede a resolução automática de dependências.
-
-### Como Publicar uma Nova Versão
-1. Atualize a versão no arquivo `package.json` (exemplo: `"version": "0.1.0"`).
-2. Faça o commit do arquivo de configuração:
-   ```bash
-   git add package.json
-   git commit -m "chore: release v0.1.0"
-   ```
-3. Crie a tag git com o **formato de prefixo correto**:
-   ```bash
-   git tag -a v0.1.0 -m "Release v0.1.0"
-   ```
-4. Envie a branch e a tag para o repositório remoto:
-   ```bash
-   git push origin main
-   git push origin v0.1.0
    ```
 
 ---
