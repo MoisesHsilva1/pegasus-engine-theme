@@ -4,6 +4,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { PegasusEngine } from './engine'
 import { registerIpcHandlers } from './ipc'
+import { getMimeType, getPreloadPath } from './utils'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -21,32 +22,12 @@ protocol.registerSchemesAsPrivileged([
     },
   },
 ])
-
-function getMimeType(filePath: string): string {
-  const ext = path.extname(filePath).toLowerCase()
-  switch (ext) {
-    case '.jpg':
-    case '.jpeg':
-      return 'image/jpeg'
-    case '.png':
-      return 'image/png'
-    case '.webp':
-      return 'image/webp'
-    case '.svg':
-      return 'image/svg+xml'
-    default:
-      return 'application/octet-stream'
-  }
-}
-
 let mainWindow: BrowserWindow | null = null
 
 const engine = new PegasusEngine()
 
 function createWindow(): void {
-  const mjsPreload = path.join(__dirname, '../preload/index.mjs')
-  const jsPreload = path.join(__dirname, '../preload/index.js')
-  const preloadPath = fs.existsSync(mjsPreload) ? mjsPreload : jsPreload
+  const preloadPath = getPreloadPath()
 
   mainWindow = new BrowserWindow({
     width: 1200,
