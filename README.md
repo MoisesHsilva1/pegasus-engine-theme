@@ -6,13 +6,90 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript)](https://www.typescriptlang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-**Pegasus Engine Theme** is a native Fedora-focused Linux desktop application that provides a modern graphical management interface for the Pegasus Engine Theme environment (desktop themes, terminal profiles, wallpapers, system configurations, and native packages).
+**Pegasus Engine Theme** is a native Fedora-focused Linux desktop application that provides a modern, graphical management interface for configuring your desktop themes, terminal profiles, wallpapers, system configurations, and native packages.
 
 ---
 
-## Overview
+## Application Principles
 
-Pegasus Engine Theme bridges desktop customization and Fedora system utilities (`gsettings`, `dnf`, `flatpak`, `systemctl`) into a unified, secure Electron application. It strictly enforces process separation and security boundaries between the graphical interface and privileged system operations.
+Pegasus is built with the end-user in mind, focusing on the following core principles:
+
+- **Local Execution First**: No remote server or backend is required. Everything runs locally on your Fedora Linux machine, keeping your data secure.
+- **Native Integration**: Seamlessly integrates with Fedora system utilities (`gsettings`, `dnf`, `flatpak`, `systemctl`) to provide a unified experience without the need for manual terminal commands.
+- **Security by Design**: We enforce strict process separation between the UI and system operations, meaning the application is safe and your system configuration is protected.
+- **No Intrusive Telemetry**: We operate directly on native Linux configuration files and system APIs.
+
+---
+
+## Features
+
+- **Desktop Theme Management**: Browse, preview, apply, and persist GTK and GNOME desktop themes with a single click.
+- **System Environment Dashboard**: Get a real-time overview of your Fedora distribution version, GNOME version, uptime, kernel details, and hardware resource utilization.
+- **Terminal Profile Synchronization**: Generate and apply cohesive color schemes for Alacritty and GNOME Terminal.
+- **Multi-language Support**: Full support for English (`en`) and Brazilian Portuguese (`pt-BR`).
+
+### Included Themes
+Pegasus comes pre-configured with 10 beautiful dark themes:
+1. Catppuccin Mocha | 2. Tokyo Night | 3. Nord | 4. Gruvbox Dark | 5. Everforest
+6. Kanagawa | 7. Rosé Pine | 8. Matte Black | 9. Osaka Jade | 10. Ristretto
+
+---
+
+## Installation Guide
+
+### System Requirements
+- **Operating System**: Fedora Linux 38+ (Workstation recommended)
+- **Desktop Environment**: GNOME 40+
+- **Architecture**: x86_64
+
+### Option A: Fedora RPM Package (Recommended)
+
+The easiest way to install Pegasus and get automatic GNOME Application Launcher integration is via our RPM package.
+
+1. Download the generated `.rpm` package from the [Releases](https://github.com/MoisesHsilva1/pegasus-theme/releases) page or the `release/` folder.
+2. Install via `dnf`:
+
+```bash
+sudo dnf install ./release/Pegasus-Engine-Theme-0.1.0.x86_64.rpm
+```
+
+Once installed, you can launch the application from your GNOME App Drawer or by typing `pegasus-engine-theme` in your terminal.
+
+### Option B: AppImage (Portable)
+
+If you prefer a portable solution without system-wide installation:
+
+1. Download the AppImage file.
+2. Make it executable and launch it:
+
+```bash
+chmod +x ./release/Pegasus-Engine-Theme-0.1.0.AppImage
+./release/Pegasus-Engine-Theme-0.1.0.AppImage
+```
+
+---
+
+## Configuration & Storage
+
+Your preferences are stored securely in your home directory:
+- **Active Theme Settings**: `~/.config/pegasus/active-theme.json`
+- **Application State**: `~/.config/Pegasus Engine Theme/`
+
+To completely **Uninstall**, run:
+```bash
+sudo dnf remove pegasus-engine-theme
+```
+*(Note: To remove your configuration files entirely, you can safely delete the folders mentioned above.)*
+
+---
+
+##  Developer & Architecture Information
+
+<details>
+<summary>Click to expand developer documentation</summary>
+
+### Architecture Overview
+Pegasus Engine Theme bridges desktop customization and Fedora system utilities into a unified, secure Electron application. It strictly enforces process separation and security boundaries between the graphical interface and privileged system operations.
 
 ```text
 ┌─────────────────────────────────────────────────────────┐
@@ -49,103 +126,21 @@ Pegasus Engine Theme bridges desktop customization and Fedora system utilities (
 └────────────────────────────?────────────────────────────┘
 ```
 
-- **Local Execution**: No remote server or backend required; executes locally on Fedora Linux.
-- **No HTTP/REST Layer**: Pure IPC bridge communication over Electron boundaries.
-- **No External Database**: Operates directly on native Linux configuration files and system APIs.
+### Development Setup
 
----
-
-## Features
-
-- 🎨 **Desktop Theme Management**: Browse, preview, apply, and persist GTK and GNOME desktop themes (Catppuccin, Everforest, Gruvbox, Kanagawa, Matte Black, Nord, Osaka Jade, Ristretto, Rosé Pine, Tokyo Night).
-- 🖥️ **System Environment Dashboard**: Real-time Fedora distribution version, GNOME version, uptime, kernel details, and hardware resource utilization.
-- 💻 **Terminal Profile Synchronization**: Generate and apply color schemes for Alacritty and GNOME Terminal.
-- 🌐 **Internationalization (i18n)**: Full language support for English (`en`) and Brazilian Portuguese (`pt-BR`).
-- 📦 **Native Fedora RPM & AppImage Packaging**: Installable `.rpm` package with full GNOME Application Launcher integration.
-
----
-
-## System Requirements
-
-- **Operating System**: Fedora Linux 38+ (Workstation recommended)
-- **Desktop Environment**: GNOME 40+
-- **Architecture**: x86_64
-- **Node.js (for development)**: Node.js v22+
-- **Package Manager**: `pnpm` v10+
-
----
-
-## Installation
-
-### Fedora RPM Package (Recommended)
-
-Download the generated `.rpm` package from the `release/` folder or build it locally, then install via `dnf`:
-
-```bash
-sudo dnf install ./release/Pegasus-Engine-Theme-0.1.0.x86_64.rpm
-```
-
-Installed paths:
-- **Executable**: `/usr/bin/pegasus-engine-theme`
-- **Application Directory**: `/opt/pegasus-engine-theme/`
-- **GNOME Launcher Entry**: `/usr/share/applications/pegasus-engine-theme.desktop`
-- **High-Res Icon**: `/usr/share/icons/hicolor/512x512/apps/pegasus-engine-theme.png`
-
-To launch from terminal:
-```bash
-pegasus-engine-theme
-```
-
-### AppImage (Portable)
-
-Make the AppImage executable and launch it:
-
-```bash
-chmod +x ./release/Pegasus-Engine-Theme-0.1.0.AppImage
-./release/Pegasus-Engine-Theme-0.1.0.AppImage
-```
-
-For complete installation details, see [Installation Guide](docs/installation.md).
-
----
-
-## Uninstallation
-
-To remove the native RPM package:
-
-```bash
-sudo dnf remove pegasus-engine-theme
-```
-
-> **Data Preservation**: Uninstalling the RPM package removes application binaries and system launchers, but preserves your personal configuration files in `~/.config/pegasus/`. To purge configuration files completely:
-> ```bash
-> rm -rf ~/.config/pegasus ~/.local/share/pegasus "~/.config/Pegasus Engine Theme"
-> ```
-
----
-
-## Development
-
-### 1. Clone & Install Dependencies
-
+1. **Clone & Install Dependencies**
 ```bash
 git clone https://github.com/MoisesHsilva1/pegasus-theme.git
 cd pegasus-theme
 pnpm install
 ```
 
-### 2. Start Development Server
-
-Launches Vite dev server and Electron process with hot reloading:
-
+2. **Start Development Server**
 ```bash
 pnpm dev
 ```
 
----
-
-## Available Scripts
-
+### Available Scripts
 | Script | Command | Purpose |
 | :--- | :--- | :--- |
 | `pnpm dev` | `vite` | Start dev server and hot-reloading Electron app |
@@ -155,55 +150,18 @@ pnpm dev
 | `pnpm package:appimage` | `pnpm build && ...` | Generate portable AppImage (`release/*.AppImage`) |
 | `pnpm typecheck` | `tsc --noEmit` | Validate strict TypeScript compilation without output |
 | `pnpm lint` | `eslint .` | Run ESLint checks across project |
-| `pnpm lint:fix` | `eslint . --fix` | Automatically fix fixable linter errors |
 | `pnpm test` | `vitest run` | Execute unit and integration test suite |
 
----
-
-## Production Build & Packaging
-
-To generate release artifacts:
-
-```bash
-pnpm package
-```
-
-Built artifacts will be placed in `release/`:
-- `release/Pegasus-Engine-Theme-0.1.0.x86_64.rpm`
-- `release/Pegasus-Engine-Theme-0.1.0.AppImage`
-
-For detailed packaging procedures, see [Packaging Guide](docs/packaging.md).
-
----
-
-## Project Structure
-
+### Project Structure
 ```text
 pegasus-engine-theme/
 ├── docs/                     # Comprehensive documentation guides
-│   ├── architecture.md       # Process boundaries, security & engine services
-│   ├── installation.md       # RPM, AppImage, GNOME launcher & uninstall guide
-│   ├── localization.md       # i18n structure & adding languages
-│   ├── packaging.md          # Production build & Linux release packaging
-│   └── themes.md             # Theme metadata, palettes & custom themes
 ├── resources/                # Application branding & icons
-│   └── icons/
-│       └── icon.png          # 512x512 PNG application badge
 ├── scripts/                  # Automated build and packaging scripts
-│   └── build-rpm.js          # Native Fedora RPM packaging script
 ├── src/
 │   ├── main/                 # Privileged Electron main process
-│   │   ├── engine/           # Pegasus Engine services (Themes, System, Terminal)
-│   │   ├── ipc/              # Thin IPC handlers mapping channels to Engine
-│   │   └── index.ts          # Electron entry point & window security configuration
 │   ├── preload/              # Secure contextBridge API bridge
 │   ├── renderer/             # React UI (Vite, Tailwind v4, shadcn/ui)
-│   │   ├── app/              # Desktop application shell
-│   │   ├── components/       # Layout components & UI primitives
-│   │   ├── context/          # React contexts (LanguageContext i18n)
-│   │   ├── features/         # Application views (Home, Themes, Settings)
-│   │   ├── locales/          # Translation dictionaries (en, pt-BR)
-│   │   └── lib/              # UI helper utilities
 │   ├── shared/               # Shared IPC channel constants & DTO types
 │   └── themes/               # Native theme definitions & script templates
 ├── tests/                    # Vitest unit & integration test suites
@@ -211,69 +169,7 @@ pegasus-engine-theme/
 └── GEMINI.md                 # Core engineering principles & guidelines
 ```
 
----
-
-## Themes
-
-Pegasus Engine Theme comes pre-configured with 10 dark themes tailored for Fedora desktop users:
-
-1. **Catppuccin Mocha**
-2. **Tokyo Night**
-3. **Nord**
-4. **Gruvbox Dark**
-5. **Everforest**
-6. **Kanagawa**
-7. **Rosé Pine**
-8. **Matte Black**
-9. **Osaka Jade**
-10. **Ristretto**
-
-For details on adding custom themes, see [Theme System Guide](docs/themes.md).
-
----
-
-## Localization
-
-Pegasus Engine Theme supports multi-language interfaces with instant runtime switching:
-
-- **English (`en`)**
-- **Brazilian Portuguese (`pt-BR`)**
-
-Language preferences persist across sessions. For details on adding new translations, see [Localization Guide](docs/localization.md).
-
----
-
-## Configuration & Storage
-
-User preferences are stored locally on your Fedora filesystem:
-
-- **Active Theme Settings**: `~/.config/pegasus/active-theme.json`
-- **Application State**: `~/.config/Pegasus Engine Theme/`
-
----
-
-## Troubleshooting
-
-### Application fails to launch after RPM installation
-
-Verify runtime dependencies are satisfied:
-
-```bash
-sudo dnf install -y gtk3 libnotify nss xdg-utils at-spi2-core
-```
-
-### Icon missing in GNOME launcher
-
-Refresh desktop launcher database:
-
-```bash
-sudo update-desktop-database
-```
-
----
-
-## Contributing
-
+### Contributing
 1. Fork the repository & create your feature branch (`git checkout -b feature/my-feature`).
 2. Run mandatory static checks before submitting a PR:
    ```bash
@@ -283,9 +179,6 @@ sudo update-desktop-database
    pnpm build
    ```
 3. Commit your changes following repository guidelines.
+</details>
 
 ---
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
