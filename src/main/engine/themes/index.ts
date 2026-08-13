@@ -57,11 +57,6 @@ export class ThemeService {
     return profiles
   }
 
-  async getActiveTheme(): Promise<ThemeProfile | null> {
-    await this.ensureInitialized()
-    return this.getThemeProfile(this.activeThemeId)
-  }
-
   async applyTheme(themeId: string): Promise<ThemeApplyResult> {
     await this.ensureInitialized()
     const result = await this.applicationService.applyTheme(themeId)

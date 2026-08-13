@@ -101,4 +101,43 @@ describe('Wallpaper Resource Resolution & Pipeline', () => {
     const isValid = service.validateWallpaper(textFile)
     expect(isValid).toBe(false)
   })
+
+  it('8. Content Hashing: returns consistent hash for identical files', async () => {
+    const file1 = path.join(testDir, 'hash1.png')
+    const file2 = path.join(testDir, 'hash2.png')
+    const data = Buffer.from('SAME_WALLPAPER_CONTENT_DATA_123')
+
+    fs.writeFileSync(file1, data)
+    fs.writeFileSync(file2, data)
+
+    const hash1 = await service.computeWallpaperHash(file1)
+    const hash2 = await service.computeWallpaperHash(file2)
+
+    expect(hash1).toBe(hash2)
+    expect(hash1).toHaveLength(12)
+  })
+
+  it('9. Content Hashing: returns different hash for different content with identical size', async () => {
+    const file1 = path.join(testDir, 'hash3.png')
+    const file2 = path.join(testDir, 'hash4.png')
+
+    // Identical length (10 bytes) but different contents
+    const data1 = Buffer.from('abcdefghij')
+    const data2 = Buffer.from('abcdefghik')
+
+    fs.writeFileSync(file1, data1)
+    fs.writeFileSync(file2, data2)
+
+    const hash1 = await service.computeWallpaperHash(file1)
+    const hash2 = await service.computeWallpaperHash(file2)
+
+    expect(hash1).not.toBe(hash2)
+    expect(hash1).toHaveLength(12)
+    expect(hash2).toHaveLength(12)
+  })
+
+  it('10. Content Hashing: rejects with error if file does not exist', async () => {
+    const nonExistentFile = path.join(testDir, 'non-existent.jpg')
+    await expect(service.computeWallpaperHash(nonExistentFile)).rejects.toThrow()
+  })
 })

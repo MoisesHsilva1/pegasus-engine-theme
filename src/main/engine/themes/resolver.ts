@@ -1,6 +1,6 @@
-import { existsSync } from 'fs'
-import os from 'os'
-import path from 'path'
+import { existsSync } from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
 import { THEME_MANIFESTS, type ThemeId } from '../../../themes'
 
 import { app as electronApp } from 'electron'

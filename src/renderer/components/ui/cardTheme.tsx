@@ -22,7 +22,6 @@ export interface CardThemeProps {
   name: string
   description: string
   badgeText?: string
-  isApplied?: boolean
   isApplying?: boolean
   isApplyingAny?: boolean
   operations?: ThemeOperationResult[]
@@ -74,7 +73,6 @@ const CardTheme = ({
   name,
   description,
   badgeText,
-  isApplied = false,
   isApplying = false,
   isApplyingAny = false,
   operations,
@@ -113,13 +111,8 @@ const CardTheme = ({
 
   return (
     <Card
-      className={`relative flex flex-col overflow-hidden transition-all duration-300 ${
-        isApplied
-          ? 'border-primary/80 bg-card shadow-xs ring-1 ring-primary/20'
-          : 'border-border bg-card hover:border-primary/40'
-      }`}
+      className="relative flex flex-col overflow-hidden transition-all duration-300 border-border bg-card hover:border-primary/40"
     >
-      {isApplied && <div className="absolute bottom-0 left-0 top-0 w-1 rounded-l bg-primary" />}
 
       <div className="flex flex-col gap-5 p-5 md:flex-row md:items-stretch justify-between">
         {/* Left Column: Theme Information & Actions */}
@@ -143,11 +136,6 @@ const CardTheme = ({
                   <Badge variant="secondary" className="font-mono text-[11px] px-2 py-0.5">
                     {displayBadgeText}
                   </Badge>
-                  {isApplied && (
-                    <Badge variant="outline" className="text-[10px] font-mono border-primary/50 text-primary bg-primary/10">
-                      {t('cardTheme.active')}
-                    </Badge>
-                  )}
                 </div>
                 <CardDescription className="text-xs text-muted-foreground mt-1 line-clamp-2">{description}</CardDescription>
               </div>
@@ -161,14 +149,6 @@ const CardTheme = ({
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 <span>{t('cardTheme.applying')}</span>
               </Button>
-            ) : isApplied ? (
-              <Badge
-                variant="accent"
-                className="flex h-8 items-center gap-1.5 border border-success/30 bg-success/15 px-3 font-mono text-xs text-success"
-              >
-                <Check className="h-3.5 w-3.5 text-success" />
-                {t('cardTheme.applied')}
-              </Badge>
             ) : (
               <Button
                 variant="default"
@@ -247,7 +227,7 @@ const CardTheme = ({
                 <div className="flex items-center gap-1">
                   <span className="text-white/50">{t('currentTheme.status')}</span>
                   <span className="text-emerald-400 font-semibold">
-                    {isApplied ? t('currentTheme.active') : t('cardTheme.ready')}
+                    {t('cardTheme.ready')}
                   </span>
                 </div>
               </div>

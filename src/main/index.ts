@@ -1,9 +1,13 @@
-import { app, BrowserWindow, nativeTheme, Menu, protocol, net } from 'electron'
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath, pathToFileURL } from 'url'
+import { app, BrowserWindow, nativeTheme, Menu, protocol } from 'electron'
+import fs from 'node:fs'
+import path from 'node:path'
+import os from 'node:os'
+import { fileURLToPath } from 'node:url'
+import { ThemePathResolver } from './engine/themes/resolver'
+import { ThemeConfigManager } from './engine/themes/config'
 import { PegasusEngine } from './engine'
 import { registerIpcHandlers } from './ipc'
+import { getMimeType, getPreloadPath } from './utils'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -21,15 +25,12 @@ protocol.registerSchemesAsPrivileged([
     },
   },
 ])
-
 let mainWindow: BrowserWindow | null = null
 
 const engine = new PegasusEngine()
 
 function createWindow(): void {
-  const mjsPreload = path.join(__dirname, '../preload/index.mjs')
-  const jsPreload = path.join(__dirname, '../preload/index.js')
-  const preloadPath = fs.existsSync(mjsPreload) ? mjsPreload : jsPreload
+  const preloadPath = getPreloadPath()
 
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -67,16 +68,68 @@ function createWindow(): void {
   })
 }
 
+// Helper to validate and prevent path traversal vulnerabilities
+async function validateSafePath(filePath: string): Promise<string | null> {
+  try {
+    const resolvedPath = path.resolve(filePath)
+
+    const allowedDirs = [
+      ThemePathResolver.getUserThemesDir(),
+      path.join(os.homedir(), '.local', 'share', 'pegasus', 'wallpapers'),
+    ]
+
+    const bundledDir = ThemePathResolver.getBundledThemesDir()
+    if (bundledDir) {
+      allowedDirs.push(bundledDir)
+    }
+
+    // Check if there is an active external theme path
+    try {
+      const configManager = new ThemeConfigManager()
+      const config = await configManager.loadConfig()
+      if (config?.source === 'external' && config.path) {
+        allowedDirs.push(config.path)
+      }
+    } catch {
+      // Non-fatal if config manager fails
+    }
+
+    for (const dir of allowedDirs) {
+      const resolvedDir = path.resolve(dir)
+      const relative = path.relative(resolvedDir, resolvedPath)
+      const isInside = !relative.startsWith('..') && !path.isAbsolute(relative)
+      if (isInside) {
+        return resolvedPath
+      }
+    }
+  } catch {
+    return null
+  }
+  return null
+}
+
 app.whenReady().then(() => {
+
   // Handle pegasus-asset:// protocol requests for dynamic wallpaper previews
-  protocol.handle('pegasus-asset', (request) => {
+  protocol.handle('pegasus-asset', async (request) => {
     try {
       const url = new URL(request.url)
       const filePath = decodeURIComponent(url.pathname)
-      if (!fs.existsSync(filePath)) {
+
+      const safePath = await validateSafePath(filePath)
+      if (!safePath) {
+        return new Response('Access Denied', { status: 403 })
+      }
+
+      if (!fs.existsSync(safePath)) {
         return new Response('Asset not found', { status: 404 })
       }
-      return net.fetch(pathToFileURL(filePath).toString())
+      const data = await fs.promises.readFile(safePath)
+      return new Response(data, {
+        headers: {
+          'Content-Type': getMimeType(safePath),
+        },
+      })
     } catch (err) {
       return new Response(`Error loading asset: ${String(err)}`, { status: 500 })
     }

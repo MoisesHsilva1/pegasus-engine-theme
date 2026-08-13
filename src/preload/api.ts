@@ -8,7 +8,6 @@ export const api: PegasusApi = {
   },
   themes: {
     list: () => ipcRenderer.invoke(IpcChannels.THEMES_LIST),
-    getActive: () => ipcRenderer.invoke(IpcChannels.THEMES_GET_ACTIVE),
     apply: (themeId: string) => ipcRenderer.invoke(IpcChannels.THEMES_APPLY, themeId),
   },
   terminal: {

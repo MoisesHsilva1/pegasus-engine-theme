@@ -3,6 +3,13 @@ decorations = "None"
 padding.x = 12
 padding.y = 12
 
+[font]
+size = 9.0
+
+[font.normal]
+family = "monospace"
+
+
 [colors.primary]
 foreground = "#575279"
 background = "#faf4ed"

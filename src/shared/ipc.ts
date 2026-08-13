@@ -11,7 +11,6 @@ import type {
 export enum IpcChannels {
   SYSTEM_GET_INFO = 'system:get-info',
   THEMES_LIST = 'themes:list',
-  THEMES_GET_ACTIVE = 'themes:get-active',
   THEMES_APPLY = 'themes:apply',
   TERMINAL_GET_CONFIG = 'terminal:get-config',
   PACKAGES_LIST = 'packages:list',
@@ -25,7 +24,6 @@ export interface PegasusApi {
   }
   themes: {
     list: () => Promise<IpcResult<ThemeProfile[]>>
-    getActive: () => Promise<IpcResult<ThemeProfile | null>>
     apply: (themeId: string) => Promise<IpcResult<ThemeApplyResult>>
   }
   terminal: {

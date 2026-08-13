@@ -48,15 +48,8 @@ describe('Pegasus Engine Services (Independent Unit Tests)', () => {
 
     expect(list.length).toBeGreaterThan(0)
 
-    // With no persisted config, ThemeService defaults to matte-black
-    const active = await themeService.getActiveTheme()
-    expect(active?.id).toBe('matte-black')
-
     const applied = await themeService.applyTheme('nord')
     expect(applied.status).not.toBe('FAILED')
     expect(applied.themeId).toBe('nord')
-
-    const newActive = await themeService.getActiveTheme()
-    expect(newActive?.id).toBe('nord')
   })
 })

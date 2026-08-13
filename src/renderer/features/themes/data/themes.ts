@@ -2,18 +2,18 @@ import { CardThemeProps } from '@/components/ui/cardTheme'
 import { THEME_MANIFESTS } from '../../../../themes'
 import type { ThemeProfile } from '@shared/types'
 
-export interface ThemeDefinition extends Omit<CardThemeProps, 'isApplied' | 'onApply'> {
+export interface ThemeDefinition extends Omit<CardThemeProps, 'onApply'> {
   id: string
 }
 
-const wallpaperMap = import.meta.glob<string>('/src/themes/*/wallpaper/*', {
+const wallpaperMap = import.meta.glob<string>('../../../../themes/*/wallpaper/*', {
   eager: true,
   query: '?url',
   import: 'default',
 })
 
 export const themes: ThemeDefinition[] = Object.values(THEME_MANIFESTS).map((manifest) => {
-  const assetKey = `/src/themes/${manifest.id}/wallpaper/${manifest.wallpaper.file}`
+  const assetKey = `../../../../themes/${manifest.id}/wallpaper/${manifest.wallpaper.file}`
   const resolvedUrl = wallpaperMap[assetKey]
 
   return {

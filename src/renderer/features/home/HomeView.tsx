@@ -1,6 +1,5 @@
 import { PageHeader } from '@/components/shared/PageHeader'
 import { EnvironmentOverview } from './EnvironmentOverview'
-import { CurrentTheme } from './CurrentTheme'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ChessKnight, Palette, ArrowRight, Layers, Cpu } from 'lucide-react'
@@ -61,9 +60,6 @@ export function HomeView({ onNavigate }: HomeViewProps) {
 
       {/* System Environment Metrics */}
       <EnvironmentOverview />
-
-      {/* Active Theme Showcase */}
-      <CurrentTheme onNavigate={onNavigate} />
 
       {/* Quick Action Navigation Hub */}
       <section className="space-y-3">
