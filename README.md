@@ -20,29 +20,6 @@
 
 ---
 
-## Application Principles
-
-- **Local Execution First**: No remote server or backend is required. Everything runs locally on your Fedora Linux machine, keeping your data secure.
-- **Native Integration**: Integrates directly with Fedora system utilities (`gsettings`, `dnf`, `flatpak`, `systemctl`) to provide a unified experience without manual terminal commands.
-- **Security by Design**: Enforces strict process separation and typed IPC channels between the React UI renderer and system operations.
-- **Zero Telemetry**: Operates directly on native Linux configuration files and system APIs without any tracking.
-
----
-
-## Features
-
-- **Desktop Theme Management**: Browse, preview, apply, and persist GTK and GNOME desktop themes with a single click.
-- **System Environment Dashboard**: Real-time overview of Fedora distribution version, GNOME version, uptime, kernel details, and hardware resource utilization.
-- **Terminal Profile Synchronization**: Generate and apply cohesive color schemes for Alacritty and GNOME Terminal.
-- **Multi-language Support**: Full support for English (`en`) and Brazilian Portuguese (`pt-BR`).
-
-### Included Themes
-Pegasus comes pre-configured with 10 beautiful dark themes:
-1. Catppuccin Mocha | 2. Tokyo Night | 3. Nord | 4. Gruvbox Dark | 5. Everforest
-6. Kanagawa | 7. Rosé Pine | 8. Matte Black | 9. Osaka Jade | 10. Ristretto
-
----
-
 ## Installation Guide
 
 ### System Requirements
@@ -50,36 +27,36 @@ Pegasus comes pre-configured with 10 beautiful dark themes:
 - **Desktop Environment**: GNOME 40+
 - **Architecture**: x86_64
 
-### Option A: Fedora RPM Package (Recommended)
-Installing via the RPM package automatically configures GNOME Application Launcher integration.
+### Installation via tar.gz Package (Recommended)
 
-1. Download the generated `.rpm` package from the [Releases](https://github.com/MoisesHsilva1/pegasus-engine-theme/releases) page.
-2. Install via `dnf`:
+The application is distributed as a pre-compiled Linux binary package in a `.tar.gz` archive.
+
+1. Download the `pegasus-engine-theme-0.1.0.tar.gz` archive from the [Releases](https://github.com/MoisesHsilva1/pegasus-engine-theme/releases) page.
+2. Extract the archive in your preferred folder:
    ```bash
-   sudo dnf install ./Pegasus-Engine-Theme-0.1.0.x86_64.rpm
+   tar -xzf pegasus-engine-theme-0.1.0.tar.gz
    ```
-
-### Option B: AppImage (Portable)
-If you prefer a portable solution without system-wide installation:
-1. Download the AppImage file.
-2. Make it executable and launch:
+3. Ensure runtime dependencies are installed on your system:
    ```bash
-   chmod +x ./Pegasus-Engine-Theme-0.1.0.AppImage
-   ./Pegasus-Engine-Theme-0.1.0.AppImage
+   sudo dnf install -y gtk3 libnotify nss xdg-utils at-spi2-core
+   ```
+4. Navigate into the directory and run the application:
+   ```bash
+   cd pegasus-engine-theme
+   ./pegasus-engine-theme
    ```
 
 ---
 
-## Configuration & Storage
+## Uninstallation Guide
 
-Your preferences are stored securely in your home directory:
-- **Active Theme Settings**: `~/.config/pegasus/active-theme.json`
-- **Application State**: `~/.config/Pegasus Engine Theme/`
+To completely uninstall the application and purge its local configurations:
 
-To completely **Uninstall**, run:
-```bash
-sudo dnf remove pegasus-engine-theme
-```
+1. Delete the extracted `pegasus-engine-theme` folder from your system.
+2. (Optional) Remove the local user configuration and state folders:
+   ```bash
+   rm -rf ~/.config/pegasus ~/.local/share/pegasus "~/.config/Pegasus Engine Theme"
+   ```
 
 ---
 
@@ -224,29 +201,6 @@ pegasus-engine-theme/
 
 ---
 
-## Princípios do Aplicativo
-
-- **Execução Local Primeiro**: Sem necessidade de servidores externos. Tudo roda localmente em sua máquina Fedora Linux, protegendo seus dados.
-- **Integração Nativa**: Integra-se diretamente com utilitários do sistema Fedora (`gsettings`, `dnf`, `flatpak`, `systemctl`), evitando a necessidade de comandos manuais no terminal.
-- **Segurança Arquitetural**: Impõe separação rígida de processos e comunicação tipada via IPC entre a interface React e as operações privilegiadas do sistema.
-- **Zero Telemetria**: Opera diretamente nos arquivos de configuração do sistema Linux sem nenhum tipo de rastreamento.
-
----
-
-## Recursos Principais
-
-- **Gerenciador de Temas de Desktop**: Navegue, visualize, aplique e persista temas de desktop GTK e GNOME com um único clique.
-- **Painel do Sistema**: Resumo em tempo real da versão do Fedora, versão do GNOME, uptime, detalhes do kernel e utilização de recursos de hardware.
-- **Sincronização de Perfis de Terminal**: Gere e aplique paletas de cores integradas e coerentes para o Alacritty e GNOME Terminal.
-- **Suporte Multilíngue**: Suporte completo para Inglês (`en`) e Português do Brasil (`pt-BR`).
-
-### Temas Inclusos
-O Pegasus vem pré-configurado com 10 belos temas escuros:
-1. Catppuccin Mocha | 2. Tokyo Night | 3. Nord | 4. Gruvbox Dark | 5. Everforest
-6. Kanagawa | 7. Rosé Pine | 8. Matte Black | 9. Osaka Jade | 10. Ristretto
-
----
-
 ## Guia de Instalação
 
 ### Requisitos do Sistema
@@ -254,36 +208,36 @@ O Pegasus vem pré-configurado com 10 belos temas escuros:
 - **Interface Gráfica**: GNOME 40+
 - **Arquitetura**: x86_64
 
-### Opção A: Pacote Fedora RPM (Recomendado)
-A instalação via pacote RPM cria e configura automaticamente o atalho no inicializador de aplicativos do GNOME.
+### Instalação via Pacote tar.gz (Recomendado)
 
-1. Baixe o pacote `.rpm` gerado na página de [Releases](https://github.com/MoisesHsilva1/pegasus-engine-theme/releases).
-2. Instale usando o `dnf`:
+O aplicativo é distribuído como um binário pré-compilado para Linux empacotado em um arquivo `.tar.gz`.
+
+1. Baixe o arquivo `pegasus-engine-theme-0.1.0.tar.gz` na página de [Releases](https://github.com/MoisesHsilva1/pegasus-engine-theme/releases).
+2. Extraia o arquivo na pasta de sua preferência:
    ```bash
-   sudo dnf install ./Pegasus-Engine-Theme-0.1.0.x86_64.rpm
+   tar -xzf pegasus-engine-theme-0.1.0.tar.gz
    ```
-
-### Opção B: AppImage (Portátil)
-Se preferir uma solução portátil sem instalação global no sistema:
-1. Baixe o arquivo AppImage.
-2. Dê permissão de execução e inicie o app:
+3. Certifique-se de que as dependências de execução estão instaladas no seu sistema:
    ```bash
-   chmod +x ./Pegasus-Engine-Theme-0.1.0.AppImage
-   ./Pegasus-Engine-Theme-0.1.0.AppImage
+   sudo dnf install -y gtk3 libnotify nss xdg-utils at-spi2-core
+   ```
+4. Acesse o diretório e execute o aplicativo:
+   ```bash
+   cd pegasus-engine-theme
+   ./pegasus-engine-theme
    ```
 
 ---
 
-## Configuração e Armazenamento
+## Guia de Desinstalação
 
-Suas preferências de tema são armazenadas de forma segura no seu diretório home:
-- **Configurações do Tema Ativo**: `~/.config/pegasus/active-theme.json`
-- **Estado do Aplicativo**: `~/.config/Pegasus Engine Theme/`
+Para desinstalar completamente o aplicativo e limpar as configurações locais:
 
-Para **Desinstalar** completamente o aplicativo, execute:
-```bash
-sudo dnf remove pegasus-engine-theme
-```
+1. Exclua a pasta extraída `pegasus-engine-theme` do seu sistema.
+2. (Opcional) Remova as pastas de configuração e estado locais do usuário:
+   ```bash
+   rm -rf ~/.config/pegasus ~/.local/share/pegasus "~/.config/Pegasus Engine Theme"
+   ```
 
 ---
 
@@ -403,7 +357,7 @@ pegasus-engine-theme/
 
 ### Como Contribuir
 1. Faça um Fork do repositório e crie sua branch de recurso (`git checkout -b feature/minha-feature`).
-2. Execute as validações obrigatórias antes de submeter seu PR:
+2. Executar as validações obrigatórias antes de submeter seu PR:
    ```bash
    pnpm typecheck
    pnpm lint
