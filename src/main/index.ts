@@ -70,46 +70,47 @@ function createWindow(): void {
   })
 }
 
-app.whenReady().then(() => {
-  // Helper to validate and prevent path traversal vulnerabilities
-  async function validateSafePath(filePath: string): Promise<boolean> {
+// Helper to validate and prevent path traversal vulnerabilities
+async function validateSafePath(filePath: string): Promise<string | null> {
+  try {
+    const resolvedPath = path.resolve(filePath)
+
+    const allowedDirs = [
+      ThemePathResolver.getUserThemesDir(),
+      path.join(os.homedir(), '.local', 'share', 'pegasus', 'wallpapers'),
+    ]
+
+    const bundledDir = ThemePathResolver.getBundledThemesDir()
+    if (bundledDir) {
+      allowedDirs.push(bundledDir)
+    }
+
+    // Check if there is an active external theme path
     try {
-      const resolvedPath = path.resolve(filePath)
-
-      const allowedDirs = [
-        ThemePathResolver.getUserThemesDir(),
-        path.join(os.homedir(), '.local', 'share', 'pegasus', 'wallpapers'),
-      ]
-
-      const bundledDir = ThemePathResolver.getBundledThemesDir()
-      if (bundledDir) {
-        allowedDirs.push(bundledDir)
-      }
-
-      // Check if there is an active external theme path
-      try {
-        const configManager = new ThemeConfigManager()
-        const config = await configManager.loadConfig()
-        if (config && config.source === 'external' && config.path) {
-          allowedDirs.push(config.path)
-        }
-      } catch {
-        // Non-fatal if config manager fails
-      }
-
-      for (const dir of allowedDirs) {
-        const resolvedDir = path.resolve(dir)
-        const relative = path.relative(resolvedDir, resolvedPath)
-        const isInside = !relative.startsWith('..') && !path.isAbsolute(relative)
-        if (isInside) {
-          return true
-        }
+      const configManager = new ThemeConfigManager()
+      const config = await configManager.loadConfig()
+      if (config?.source === 'external' && config.path) {
+        allowedDirs.push(config.path)
       }
     } catch {
-      return false
+      // Non-fatal if config manager fails
     }
-    return false
+
+    for (const dir of allowedDirs) {
+      const resolvedDir = path.resolve(dir)
+      const relative = path.relative(resolvedDir, resolvedPath)
+      const isInside = !relative.startsWith('..') && !path.isAbsolute(relative)
+      if (isInside) {
+        return resolvedPath
+      }
+    }
+  } catch {
+    return null
   }
+  return null
+}
+
+app.whenReady().then(() => {
 
   // Handle pegasus-asset:// protocol requests for dynamic wallpaper previews
   protocol.handle('pegasus-asset', async (request) => {
@@ -117,16 +118,16 @@ app.whenReady().then(() => {
       const url = new URL(request.url)
       const filePath = decodeURIComponent(url.pathname)
 
-      const isSafe = await validateSafePath(filePath)
-      if (!isSafe) {
+      const safePath = await validateSafePath(filePath)
+      if (!safePath) {
         return new Response('Access Denied', { status: 403 })
       }
 
-      if (!fs.existsSync(filePath)) {
+      if (!fs.existsSync(safePath)) {
         return new Response('Asset not found', { status: 404 })
       }
-      const buffer = fs.readFileSync(filePath)
-      const ext = path.extname(filePath).toLowerCase()
+      const buffer = fs.readFileSync(safePath)
+      const ext = path.extname(safePath).toLowerCase()
       const mimeTypes: Record<string, string> = {
         '.png': 'image/png',
         '.jpg': 'image/jpeg',
