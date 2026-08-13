@@ -7,6 +7,7 @@ import { ThemePathResolver } from './engine/themes/resolver'
 import { ThemeConfigManager } from './engine/themes/config'
 import { PegasusEngine } from './engine'
 import { registerIpcHandlers } from './ipc'
+import { getMimeType, getPreloadPath } from './utils'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -24,15 +25,12 @@ protocol.registerSchemesAsPrivileged([
     },
   },
 ])
-
 let mainWindow: BrowserWindow | null = null
 
 const engine = new PegasusEngine()
 
 function createWindow(): void {
-  const mjsPreload = path.join(__dirname, '../preload/index.mjs')
-  const jsPreload = path.join(__dirname, '../preload/index.js')
-  const preloadPath = fs.existsSync(mjsPreload) ? mjsPreload : jsPreload
+  const preloadPath = getPreloadPath()
 
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -126,18 +124,11 @@ app.whenReady().then(() => {
       if (!fs.existsSync(safePath)) {
         return new Response('Asset not found', { status: 404 })
       }
-      const buffer = fs.readFileSync(safePath)
-      const ext = path.extname(safePath).toLowerCase()
-      const mimeTypes: Record<string, string> = {
-        '.png': 'image/png',
-        '.jpg': 'image/jpeg',
-        '.jpeg': 'image/jpeg',
-        '.webp': 'image/webp',
-        '.gif': 'image/gif',
-      }
-      const contentType = mimeTypes[ext] || 'application/octet-stream'
-      return new Response(buffer, {
-        headers: { 'content-type': contentType },
+      const data = await fs.promises.readFile(safePath)
+      return new Response(data, {
+        headers: {
+          'Content-Type': getMimeType(safePath),
+        },
       })
     } catch (err) {
       return new Response(`Error loading asset: ${String(err)}`, { status: 500 })
