@@ -1,7 +1,7 @@
-import { app, BrowserWindow, nativeTheme, Menu, protocol, net } from 'electron'
+import { app, BrowserWindow, nativeTheme, Menu, protocol } from 'electron'
 import fs from 'fs'
 import path from 'path'
-import { fileURLToPath, pathToFileURL } from 'url'
+import { fileURLToPath } from 'url'
 import { PegasusEngine } from './engine'
 import { registerIpcHandlers } from './ipc'
 
@@ -21,6 +21,23 @@ protocol.registerSchemesAsPrivileged([
     },
   },
 ])
+
+function getMimeType(filePath: string): string {
+  const ext = path.extname(filePath).toLowerCase()
+  switch (ext) {
+    case '.jpg':
+    case '.jpeg':
+      return 'image/jpeg'
+    case '.png':
+      return 'image/png'
+    case '.webp':
+      return 'image/webp'
+    case '.svg':
+      return 'image/svg+xml'
+    default:
+      return 'application/octet-stream'
+  }
+}
 
 let mainWindow: BrowserWindow | null = null
 
@@ -69,14 +86,19 @@ function createWindow(): void {
 
 app.whenReady().then(() => {
   // Handle pegasus-asset:// protocol requests for dynamic wallpaper previews
-  protocol.handle('pegasus-asset', (request) => {
+  protocol.handle('pegasus-asset', async (request) => {
     try {
       const url = new URL(request.url)
       const filePath = decodeURIComponent(url.pathname)
       if (!fs.existsSync(filePath)) {
         return new Response('Asset not found', { status: 404 })
       }
-      return net.fetch(pathToFileURL(filePath).toString())
+      const data = await fs.promises.readFile(filePath)
+      return new Response(data, {
+        headers: {
+          'Content-Type': getMimeType(filePath),
+        },
+      })
     } catch (err) {
       return new Response(`Error loading asset: ${String(err)}`, { status: 500 })
     }
