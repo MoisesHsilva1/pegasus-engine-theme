@@ -82,7 +82,7 @@ jobs:
       - name: Build tar.gz release package
         run: |
           pnpm build
-          npx electron-builder --linux dir
+          pnpm exec electron-builder --linux dir
           VERSION=$(node -p "require('./package.json').version")
           tar -czf release/pegasus-engine-theme-$VERSION.tar.gz -C release/linux-unpacked .
         env:
