@@ -76,35 +76,30 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      - name: Install RPM tooling
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y rpm
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build release artifacts
-        run: pnpm package:linux
+      - name: Build tar.gz release package
+        run: |
+          pnpm build
+          pnpm exec electron-builder --linux dir
+          VERSION=$(node -p "require('./package.json').version")
+          tar -czf release/pegasus-engine-theme-$VERSION.tar.gz -C release/linux-unpacked .
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload release artifacts
+      - name: Upload tar.gz release package
         uses: actions/upload-artifact@v4
         with:
           name: pegasus-engine-theme-linux
-          path: |
-            release/*.rpm
-            release/*.AppImage
+          path: release/*.tar.gz
           if-no-files-found: error
           retention-days: 30
 
-      - name: Create GitHub Release
+      - name: Publish Release on GitHub
         uses: softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: |
-            release/*.rpm
-            release/*.AppImage
+          files: release/*.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
