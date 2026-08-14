@@ -24,12 +24,20 @@ This document provides step-by-step instructions for installing, running, and un
 
 The application is distributed as a pre-compiled Linux binary packaged in a `.tar.gz` archive.
 
+> [!IMPORTANT]
+> **Source Code vs. Compiled Binary Warning**
+>
+> On the GitHub Releases page, make sure to download the compiled release package (e.g., **`pegasus-engine-theme-0.1.1.tar.gz`** under the "Assets" section) and **NOT** the automatic **Source code (tar.gz)** or **Source code (zip)** archives.
+>
+> - **How to tell if you downloaded the WRONG archive**: If you extract the file and see folders like `src`, `tests`, `docs` and files like `package.json`, `pnpm-lock.yaml`, you downloaded the raw development source code. It **does not** contain the pre-compiled executable binary and cannot be run directly via `./pegasus-engine-theme`.
+> - **Correct Release Structure**: The correct compiled release archive contains the executable binary **`pegasus-engine-theme`** directly in the root of the extracted folder, along with its Electron support files, and no developer configuration files (like `eslint.config.js` or `tsconfig.json`).
+
 #### Installation & Execution
 
-1. Download the `pegasus-engine-theme-0.1.0.tar.gz` package from the Releases page.
+1. Download the compiled `pegasus-engine-theme-0.1.1.tar.gz` package from the Releases page.
 2. Extract the archive in your preferred directory:
    ```bash
-   tar -xzf pegasus-engine-theme-0.1.0.tar.gz
+   tar -xzf pegasus-engine-theme-0.1.1.tar.gz
    ```
 3. Navigate to the extracted directory:
    ```bash

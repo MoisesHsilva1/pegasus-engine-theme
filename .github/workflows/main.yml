@@ -84,7 +84,8 @@ jobs:
           pnpm build
           pnpm exec electron-builder --linux dir
           VERSION=$(node -p "require('./package.json').version")
-          tar -czf release/pegasus-engine-theme-$VERSION.tar.gz -C release/linux-unpacked .
+          mv release/linux-unpacked release/pegasus-engine-theme
+          tar -czf release/pegasus-engine-theme-$VERSION.tar.gz -C release pegasus-engine-theme
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
