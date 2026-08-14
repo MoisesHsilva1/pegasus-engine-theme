@@ -100,7 +100,7 @@ jobs:
           retention-days: 30
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@c8601c2a3e1d10ca0f85b3187a9fc24a873d63b0
+        uses: softprops/action-gh-release@de2c0eb89ae2a008779d80514936d5191c49b657
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
