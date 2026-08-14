@@ -65,7 +65,7 @@ export class SystemService {
       kernelVersion,
       hostname,
       architecture: process.arch,
-      pegasusVersion: '0.1.0',
+      pegasusVersion: '0.1.1',
     }
   }
 }

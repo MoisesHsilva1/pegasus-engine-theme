@@ -30,7 +30,7 @@ This document describes the production build pipeline, packaging scripts, artifa
 ┌─────────────────────────────────────────────────────────┐
 │              4. Native Fedora RPM Generation            │
 │                 node scripts/build-rpm.js               │
-│     Generates: release/Pegasus-Engine-Theme-0.1.0.rpm  │
+│     Generates: release/Pegasus-Engine-Theme-0.1.1.rpm  │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -55,8 +55,8 @@ All release packages are placed in the root `release/` directory:
 
 ```text
 release/
-├── Pegasus-Engine-Theme-0.1.0.x86_64.rpm   # Native Fedora RPM package (~105MB)
-├── Pegasus-Engine-Theme-0.1.0.AppImage     # Portable AppImage executable (~107MB)
+├── Pegasus-Engine-Theme-0.1.1.x86_64.rpm   # Native Fedora RPM package (~105MB)
+├── Pegasus-Engine-Theme-0.1.1.AppImage     # Portable AppImage executable (~107MB)
 ├── linux-unpacked/                          # Unpacked Linux Electron application bundle
 └── builder-effective-config.yaml           # Effective electron-builder YAML configuration
 ```
@@ -70,7 +70,7 @@ Artifact filenames derive their version automatically from `package.json`:
 ```json
 {
   "name": "pegasus-engine-theme",
-  "version": "0.1.0"
+  "version": "0.1.1"
 }
 ```
 
@@ -93,8 +93,8 @@ The generated RPM package includes:
 ### Inspecting RPM Metadata & Files
 
 ```bash
-rpm -qip release/Pegasus-Engine-Theme-0.1.0.x86_64.rpm
-rpm -qlp release/Pegasus-Engine-Theme-0.1.0.x86_64.rpm
+rpm -qip release/Pegasus-Engine-Theme-0.1.1.x86_64.rpm
+rpm -qlp release/Pegasus-Engine-Theme-0.1.1.x86_64.rpm
 ```
 
 ### Verifying Bundle Security (No Secrets or Dev Assets)

@@ -31,10 +31,13 @@
 
 The application is distributed as a pre-compiled Linux binary package in a `.tar.gz` archive.
 
-1. Download the `pegasus-engine-theme-0.1.0.tar.gz` archive from the [Releases](https://github.com/MoisesHsilva1/pegasus-engine-theme/releases) page.
+> [!IMPORTANT]
+> Make sure to download the compiled release package (e.g. **`pegasus-engine-theme-0.1.1.tar.gz`** under the **Assets** section) and **NOT** the automatic **Source code (tar.gz)** or **Source code (zip)** archives. The source code archives only contain raw development files and cannot be run directly without building the project.
+
+1. Download the compiled `pegasus-engine-theme-0.1.1.tar.gz` archive from the [Releases](https://github.com/MoisesHsilva1/pegasus-engine-theme/releases) page.
 2. Extract the archive in your preferred folder:
    ```bash
-   tar -xzf pegasus-engine-theme-0.1.0.tar.gz
+   tar -xzf pegasus-engine-theme-0.1.1.tar.gz
    ```
 3. Ensure runtime dependencies are installed on your system:
    ```bash
@@ -186,10 +189,13 @@ pegasus-engine-theme/
 
 O aplicativo é distribuído como um binário pré-compilado para Linux empacotado em um arquivo `.tar.gz`.
 
-1. Baixe o arquivo `pegasus-engine-theme-0.1.0.tar.gz` na página de [Releases](https://github.com/MoisesHsilva1/pegasus-engine-theme/releases).
+> [!IMPORTANT]
+> Certifique-se de baixar o pacote de release compilado (ex: **`pegasus-engine-theme-0.1.1.tar.gz`** na seção **Assets**) e **NÃO** os arquivos automáticos do GitHub **Source code (tar.gz)** ou **Source code (zip)**. Os arquivos de código-fonte contêm apenas os arquivos brutos de desenvolvimento do repositório e não podem ser executados diretamente sem compilar o projeto.
+
+1. Baixe o arquivo compilado `pegasus-engine-theme-0.1.1.tar.gz` na página de [Releases](https://github.com/MoisesHsilva1/pegasus-engine-theme/releases).
 2. Extraia o arquivo na pasta de sua preferência:
    ```bash
-   tar -xzf pegasus-engine-theme-0.1.0.tar.gz
+   tar -xzf pegasus-engine-theme-0.1.1.tar.gz
    ```
 3. Certifique-se de que as dependências de execução estão instaladas no seu sistema:
    ```bash
