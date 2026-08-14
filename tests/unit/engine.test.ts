@@ -39,7 +39,7 @@ describe('Pegasus Engine Services (Independent Unit Tests)', () => {
 
     expect(info.osName).toBe('Fedora Linux')
     expect(info.osVersion).toContain('41')
-    expect(info.pegasusVersion).toBe('0.1.0')
+    expect(info.pegasusVersion).toBe('0.1.1')
   })
 
   it('should list themes and allow theme switching in ThemeService', async () => {
